@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION="2.0 20170706-01"
+VERSION="2.1"
 
 HELPTEXT="\
 TES3MP-deploy ($VERSION)
@@ -14,6 +14,7 @@ Modes of operation:
   -u, --upgrade			Upgrade TES3MP
   -a, --auto-upgrade		Automatically upgrade TES3MP if there are changes on the remote repository
   -r, --rebuild			Simply rebuild TES3MP
+  -y, --script-upgrade		Upgrade the TES3MP-deploy script
   -h, --help			This help text
 
 Options:
@@ -52,7 +53,7 @@ else
     -u | --upgrade )
       UPGRADE=true
     ;;
-    
+
     #UPGRADE IF THERE ARE CHANGES IN THE UPSTREAM CODE
     -a | --auto-upgrade )
       UPGRADE=true
@@ -64,6 +65,11 @@ else
       REBUILD=true
     ;;
     
+    #UPGRADE THE SCRIPT
+    -y | --script-upgrade )
+      SCRIPT_UPGRADE=true
+    ;;
+
     #DEFINE INSTALLATION AS SERVER ONLY
     -s | --server-only )
       SERVER_ONLY=true
@@ -111,7 +117,7 @@ else
 fi
 
 #EXIT IF NO OPERATION IS SPECIFIED
-if [[ ! $INSTALL && ! $UPGRADE && ! $REBUILD ]]; then
+if [[ ! $INSTALL && ! $UPGRADE && ! $REBUILD && ! $SCRIPT_UPGRADE ]]; then
   echo -e "\nNo operation specified, exiting."
   exit 1
 fi
@@ -378,11 +384,10 @@ fi
 #REBUILD TES3MP
 if [ $REBUILD ]; then
 
-  #Check if dependencies are present
+  #CHECK WHICH DEPENDENCIES ARE PRESENT
   if [ -d "$DEPENDENCIES"/osg ]; then
     BUILD_OSG=true
   fi
-
   if [ -d "$DEPENDENCIES"/bullet ]; then
     BUILD_BULLET=true
   fi
@@ -539,5 +544,36 @@ if [ $REBUILD ]; then
   #ALL DONE
   echo -e "\n\n\nAll done! Press any key to exit.\nMay Vehk bestow his blessing upon your Muatra."
   read
+
+fi
+
+#UPGRADE THE TES3MP-DEPLOY SCRIPT
+if [ $SCRIPT_UPGRADE ]; then
+
+  SCRIPT_OLD_VERSION=$(cat tes3mp-deploy.sh | grep ^VERSION= | cut -d'"' -f2)
+
+  if [ -d ./.git ]; then
+    echo -e "\n>>Upgrading the TES3MP-deploy git repository"
+    git pull
+  else
+    echo -e "\n>>Downloading TES3MP-deploy from GitHub"
+    mv "$0" "$BASE"/.tes3mp-deploy.sh.bkp
+    wget --no-verbose -O "$BASE"/tes3mp-deploy.sh https://raw.githubusercontent.com/GrimKriegor/TES3MP-deploy/master/tes3mp-deploy.sh
+  fi
+
+  SCRIPT_NEW_VERSION=$(cat tes3mp-deploy.sh | grep ^VERSION= | cut -d'"' -f2)
+
+  if [ "$SCRIPT_NEW_VERSION" == "" ]; then
+    echo -e "\nThere was a problem downloading the script, exiting."
+    exit 1
+  fi
+
+  if [ "$SCRIPT_OLD_VERSION" != "$SCRIPT_NEW_VERSION" ]; then
+    echo -e "\nScript upgraded from ($SCRIPT_OLD_VERSION) to ($SCRIPT_NEW_VERSION)"
+    exit 0
+  else
+    echo -e "\nScript already at the latest avaliable version ($SCRIPT_OLD_VERSION)"
+    exit 0
+  fi
 
 fi

@@ -22,7 +22,7 @@ Options:
   -c, --cores N			Use N cores for building TES3MP and its dependencies
   -v, --commit			HASH Checkout and build a specific TES3MP commit
   -s, --version-string		STRING Set the version string for compatibility
-  
+
 Please report bugs in the GitHub issue page or directly on the TES3MP Discord.
 https://github.com/GrimKriegor/TES3MP-deploy
 "
@@ -32,7 +32,7 @@ if [ $# -eq 0 ]; then
   echo -e "$HELPTEXT"
   echo -e "No parameter specified."
   exit 1
-  
+
 else
   while [ $# -ne 0 ]; do
     case $1 in
@@ -48,7 +48,7 @@ else
       INSTALL=true
       REBUILD=true
     ;;
-    
+
     #FIRST TIME RUN, INSTALL WITHOUT ASKING
     -u | --upgrade )
       UPGRADE=true
@@ -59,12 +59,12 @@ else
       UPGRADE=true
       AUTO_UPGRADE=true
     ;;
-    
+
     #FIRST TIME RUN, INSTALL WITHOUT ASKING
     -r | --rebuild )
       REBUILD=true
     ;;
-    
+
     #UPGRADE THE SCRIPT
     -y | --script-upgrade )
       SCRIPT_UPGRADE=true
@@ -99,7 +99,7 @@ else
         shift
       fi
     ;;
-    
+
     #NUMBER OF CPU THREADS TO USE IN COMPILATION
     -c | --cores )
       if [[ "$2" =~ ^-.* || "$2" == "" ]]; then
@@ -113,7 +113,7 @@ else
     esac
     shift
   done
-  
+
 fi
 
 #EXIT IF NO OPERATION IS SPECIFIED
@@ -215,7 +215,7 @@ if [ $INSTALL ]; then
               su -c 'dnf install http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm'
               echo -e "Done!"
         fi
-        sudo dnf --refresh groupinstall development-tools 
+        sudo dnf --refresh groupinstall development-tools
         sudo dnf --refresh install openal-devel OpenSceneGraph-qt-devel SDL2-devel qt4-devel boost-filesystem git boost-thread boost-program-options boost-system ffmpeg-devel ffmpeg-libs bullet-devel gcc-c++ mygui-devel unshield-devel tinyxml-devel cmake #llvm35 llvm clang ncurses
         BUILD_BULLET=true
     ;;
@@ -304,7 +304,7 @@ if [ $INSTALL ]; then
       fi
 
       make install
-      
+
       cd "$BASE"
   fi
 
@@ -362,14 +362,14 @@ if [ $UPGRADE ]; then
     echo -e "\nNo changes on the git repository"
   fi
   cd "$BASE"
-  
+
   #AUTOMATICALLY UPGRADE IF THERE ARE GIT CHANGES
   if [ $AUTO_UPGRADE ]; then
     if [ $GIT_CHANGES ]; then
       REBUILD="YES"
     else
       echo -e "\nNo new commits, exiting."
-      exit 0     
+      exit 0
     fi
   else
     echo -e "\nDo you wish to rebuild TES3MP? (type YES to continue)"
@@ -378,7 +378,7 @@ if [ $UPGRADE ]; then
       REBUILD="YES"
     fi
   fi
-  
+
 fi
 
 #REBUILD TES3MP
@@ -427,7 +427,7 @@ if [ $REBUILD ]; then
 
     cd "$BASE"
   fi
-  
+
     #PULL CODE CHANGES FROM THE GIT REPOSITORY
   if [ "$UPGRADE" == "YES" ]; then
     echo -e "\n>> Pulling code changes from git"
@@ -485,7 +485,7 @@ if [ $REBUILD ]; then
       -DOSGVIEWER_INCLUDE_DIR="${OSG_LOCATION}"/include \
       -DOSGVIEWER_LIBRARY="${OSG_LOCATION}"/build/lib/libosgViewer.so"
   fi
-  
+
   if [ $BUILD_BULLET ]; then
     CMAKE_PARAMS="$CMAKE_PARAMS \
       -DBullet_INCLUDE_DIR="${BULLET_LOCATION}"/install/include/bullet \
@@ -512,7 +512,7 @@ if [ $REBUILD ]; then
   echo -e "\n\n$CMAKE_PARAMS\n\n"
   cmake "$CODE" $CMAKE_PARAMS
   make -j $CORES 2>&1 | tee "${BASE}"/build.log
-  
+
   cd "$BASE"
 
   #CREATE SYMLINKS FOR THE CONFIG FILES INSIDE THE NEW BUILD FOLDER
@@ -559,6 +559,7 @@ if [ $SCRIPT_UPGRADE ]; then
     echo -e "\n>>Downloading TES3MP-deploy from GitHub"
     mv "$0" "$BASE"/.tes3mp-deploy.sh.bkp
     wget --no-verbose -O "$BASE"/tes3mp-deploy.sh https://raw.githubusercontent.com/GrimKriegor/TES3MP-deploy/master/tes3mp-deploy.sh
+    chmod +x ./tes3mp-deploy.sh
   fi
 
   SCRIPT_NEW_VERSION=$(cat tes3mp-deploy.sh | grep ^VERSION= | cut -d'"' -f2)

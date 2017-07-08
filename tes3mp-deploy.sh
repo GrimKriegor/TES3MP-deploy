@@ -21,7 +21,7 @@ Options:
   -s, --server-only		Only build the server
   -c, --cores N			Use N cores for building TES3MP and its dependencies
   -v, --commit			HASH Checkout and build a specific TES3MP commit
-  -s, --version-string		STRING Set the version string for compatibility
+  -e, --version-string		STRING Set the version string for compatibility
 
 Please report bugs in the GitHub issue page or directly on the TES3MP Discord.
 https://github.com/GrimKriegor/TES3MP-deploy
@@ -43,24 +43,24 @@ else
       exit 1
     ;;
 
-    #FIRST TIME RUN, INSTALL WITHOUT ASKING
+    #INSTALL DEPENDENCIES AND BUILD TES3MP
     -i | --install )
       INSTALL=true
       REBUILD=true
     ;;
 
-    #FIRST TIME RUN, INSTALL WITHOUT ASKING
+    #CHECK IF THERE ARE UPDATES, PROMPT TO REBUILD IF SO
     -u | --upgrade )
       UPGRADE=true
     ;;
 
-    #UPGRADE IF THERE ARE CHANGES IN THE UPSTREAM CODE
+    #UPGRADE AUTOMATICALLY IF THERE ARE CHANGES IN THE UPSTREAM CODE
     -a | --auto-upgrade )
       UPGRADE=true
       AUTO_UPGRADE=true
     ;;
 
-    #FIRST TIME RUN, INSTALL WITHOUT ASKING
+    #REBUILD TES3MP
     -r | --rebuild )
       REBUILD=true
     ;;
@@ -89,7 +89,7 @@ else
     ;;
 
     #CUSTOM VERSION STRING FOR COMPATIBILITY
-    -s | --version-string )
+    -e | --version-string )
       if [[ "$2" =~ ^-.* || "$2" == "" ]]; then
         echo -e "\nYou must specify a valid version string"
         exit 1

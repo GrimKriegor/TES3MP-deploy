@@ -457,8 +457,8 @@ if [ $REBUILD ]; then
       -DCallFF_INCLUDES="${CALLFF_LOCATION}"/include \
       -DCallFF_LIBRARY="${CALLFF_LOCATION}"/build/src/libcallff.a \
       -DRakNet_INCLUDES="${RAKNET_LOCATION}"/include \
-      -DRakNet_LIBRARY_DEBUG="${RAKNET_LOCATION}"/build/lib/LibStatic/libRakNetLibStatic.a \
-      -DRakNet_LIBRARY_RELEASE="${RAKNET_LOCATION}"/build/lib/LibStatic/libRakNetLibStatic.a \
+      -DRakNet_LIBRARY_DEBUG="${RAKNET_LOCATION}"/build/lib/libRakNetLibStatic.a \
+      -DRakNet_LIBRARY_RELEASE="${RAKNET_LOCATION}"/build/lib/libRakNetLibStatic.a \
       -DTerra_INCLUDES="${TERRA_LOCATION}"/include \
       -DTerra_LIBRARY_RELEASE="${TERRA_LOCATION}"/lib/libterra.a"
 

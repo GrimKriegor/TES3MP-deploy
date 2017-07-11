@@ -367,6 +367,7 @@ if [ $UPGRADE ]; then
   if [ $AUTO_UPGRADE ]; then
     if [ $GIT_CHANGES ]; then
       REBUILD="YES"
+      UPGRADE="YES"
     else
       echo -e "\nNo new commits, exiting."
       exit 0
@@ -376,6 +377,7 @@ if [ $UPGRADE ]; then
     read REBUILD_PROMPT
     if [ "$REBUILD_PROMPT" == "YES" ]; then
       REBUILD="YES"
+      UPGRADE="YES"
     fi
   fi
 

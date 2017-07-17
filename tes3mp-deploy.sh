@@ -545,7 +545,10 @@ if [ $REBUILD ]; then
 
   #ALL DONE
   echo -e "\n\n\nAll done! Press any key to exit.\nMay Vehk bestow his blessing upon your Muatra."
-  read
+
+  if [ ! $AUTO_UPGRADE ]; then
+    read
+  fi
 
 fi
 

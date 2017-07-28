@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION="2.2.0"
+VERSION="2.2.1"
 
 HELPTEXT="\
 TES3MP-deploy ($VERSION)
@@ -563,6 +563,8 @@ fi
 if [ $MAKE_PACKAGE ]; then
   echo -e "\n>> Creating TES3MP package"
 
+  PACKAGE_BINARIES=("tes3mp" "tes3mp-browser" "tes3mp-server" "openmw-launcher" "openmw-wizard" "openmw-essimporter" "openmw-iniimporter" "bsatool" "esmtool")
+
   #EXIT IF TES3MP hasn't been compiled yet
   if [ ! -f "$DEVELOPMENT"/tes3mp ]; then
     echo -e "\nTES3MP has to be built before packaging"
@@ -583,11 +585,28 @@ if [ $MAKE_PACKAGE ]; then
   rm ./*.bkp
 
   #LIST AND COPY ALL LIBS
+  mkdir libraries
   echo -e "\nCopying needed libraries"
-  ldd tes3mp{,-server,-browser} openmw{,-launcher,-wizard,-essimporter,-iniimporter} bsatool esmtool | cut -d '>' -f2 | grep '^\s*/' | sed 's/^\s*//;s/\s*(.*$//' | \
-  while read LIB; do
-    echo -e "Copying library: $LIB"
-    cp "$LIB" .
+
+  for BINARY in "${PACKAGE_BINARIES[@]}"; do
+    #Exquisite and graceful method, copy only the non-system libs
+    join <(ldd "$BINARY" | awk '{if(substr($3,0,1)=="/") print $1,$3}') <(patchelf --print-needed "$BINARY" ) | cut -d\  -f2 | \
+    xargs -d '\n' -I{} cp --copy-contents {} ./libraries
+
+    #Alternative and quite stupid method, copy everything
+    #ldd "$BINARY" | cut -d '>' -f2 | grep '^\s*/' | sed 's/^\s*//;s/\s*(.*$//' | \
+    #while read LIB; do
+    #  echo -e "Copying library: $LIB"
+    #  cp "$LIB" ./libraries
+    #done
+
+  done
+
+  #PATCH LIBRARY PATHS ON THE EXECUTABLES
+  echo -e "\nPatching binary library paths"
+  for BINARY in "${PACKAGE_BINARIES[@]}"; do
+    echo -e "Patching: $BINARY"
+    patchelf --set-rpath "./libraries" "$PACKAGE_TMP"/"$BINARY"
   done
 
   #PACKAGE INFO
@@ -595,7 +614,7 @@ if [ $MAKE_PACKAGE ]; then
   PACKAGE_SYSTEM=$(uname -o  | sed 's,/,+,g')
   PACKAGE_VERSION=$(cat "$CODE"/components/openmw-mp/Version.hpp | grep TES3MP_VERSION | awk -F'"' '{print $2}')
   PACKAGE_COMMIT=$(git --git-dir=$CODE/.git rev-parse @ | head -c10)
-  PACKAGE_NAME="tes3mp-$PACKAGE_SYSTEM-$PACKAGE_ARCH-release-$PACKAGE_VERSION-$PACKAGE_COMMIT.tar.gz"
+  PACKAGE_NAME="tes3mp-$PACKAGE_SYSTEM-$PACKAGE_ARCH-release-$PACKAGE_VERSION-$PACKAGE_COMMIT"
 
   #CREATE ARCHIVE
   echo -e "\nCreating archive"
@@ -608,7 +627,7 @@ if [ $MAKE_PACKAGE ]; then
   fi
 
   #RENAME ARCHIVE
-  mv "$BASE"/package.tar.gz "$BASE"/"$PACKAGE_NAME"
+  mv "$BASE"/package.tar.gz "$BASE"/"$PACKAGE_NAME".tar.gz
 
   #CLEANUP TEMPORARY FOLDER AND FINISH
   rm -rf "$PACKAGE_TMP"

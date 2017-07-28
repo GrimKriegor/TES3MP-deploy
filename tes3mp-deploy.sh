@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION="2.1.1"
+VERSION="2.2.0"
 
 HELPTEXT="\
 TES3MP-deploy ($VERSION)
@@ -15,6 +15,7 @@ Modes of operation:
   -a, --auto-upgrade		Automatically upgrade TES3MP if there are changes on the remote repository
   -r, --rebuild			Simply rebuild TES3MP
   -y, --script-upgrade		Upgrade the TES3MP-deploy script
+  -p, --make-package		Make a portable package for easy distribution
   -h, --help			This help text
 
 Options:
@@ -70,6 +71,11 @@ else
       SCRIPT_UPGRADE=true
     ;;
 
+    #MAKE PACKAGE
+    -p | --make-package )
+      MAKE_PACKAGE=true
+    ;;
+
     #DEFINE INSTALLATION AS SERVER ONLY
     -s | --server-only )
       SERVER_ONLY=true
@@ -117,7 +123,7 @@ else
 fi
 
 #EXIT IF NO OPERATION IS SPECIFIED
-if [[ ! $INSTALL && ! $UPGRADE && ! $REBUILD && ! $SCRIPT_UPGRADE ]]; then
+if [[ ! $INSTALL && ! $UPGRADE && ! $REBUILD && ! $SCRIPT_UPGRADE && ! $MAKE_PACKAGE ]]; then
   echo -e "\nNo operation specified, exiting."
   exit 1
 fi
@@ -138,6 +144,7 @@ CODE="$BASE/code"
 DEVELOPMENT="$BASE/build"
 KEEPERS="$BASE/keepers"
 DEPENDENCIES="$BASE/dependencies"
+PACKAGE_TMP="$BASE/package"
 
 #DEPENDENCY LOCATIONS
 CALLFF_LOCATION="$DEPENDENCIES"/callff
@@ -550,6 +557,64 @@ if [ $REBUILD ]; then
     read
   fi
 
+fi
+
+#MAKE PORTABLE PACKAGE
+if [ $MAKE_PACKAGE ]; then
+  echo -e "\n>> Creating TES3MP package"
+
+  #EXIT IF TES3MP hasn't been compiled yet
+  if [ ! -f "$DEVELOPMENT"/tes3mp ]; then
+    echo -e "\nTES3MP has to be built before packaging"
+  fi
+
+  cp -r "$DEVELOPMENT" "$PACKAGE_TMP"
+  cd "$PACKAGE_TMP"
+
+  #COPY USEFUL FILES
+  echo -e "\nCopying useful files"
+  cp -r "$KEEPERS"/* .
+  sed -i "s|home = .*|home = ./PluginExamples|g" "${PACKAGE_TMP}"/tes3mp-server-default.cfg
+
+  #CLEANUP UNNEEDED FILES
+  echo -e "\nCleaning up unneeded files"
+  find "$PACKAGE_TMP" -type d -name "CMakeFiles" -exec rm -r "{}" \;
+  find "$PACKAGE_TMP" -type l -delete
+  rm ./*.bkp
+
+  #LIST AND COPY ALL LIBS
+  echo -e "\nCopying needed libraries"
+  ldd tes3mp{,-server,-browser} openmw{,-launcher,-wizard,-essimporter,-iniimporter} bsatool esmtool | cut -d '>' -f2 | grep '^\s*/' | sed 's/^\s*//;s/\s*(.*$//' | \
+  while read LIB; do
+    echo -e "Copying library: $LIB"
+    cp "$LIB" .
+  done
+
+  #PACKAGE INFO
+  PACKAGE_ARCH=$(uname -m)
+  PACKAGE_SYSTEM=$(uname -o  | sed 's,/,+,g')
+  PACKAGE_VERSION=$(cat "$CODE"/components/openmw-mp/Version.hpp | grep TES3MP_VERSION | awk -F'"' '{print $2}')
+  PACKAGE_COMMIT=$(git --git-dir=$CODE/.git rev-parse @ | head -c10)
+  PACKAGE_NAME="tes3mp-$PACKAGE_SYSTEM-$PACKAGE_ARCH-release-$PACKAGE_VERSION-$PACKAGE_COMMIT.tar.gz"
+
+  #CREATE ARCHIVE
+  echo -e "\nCreating archive"
+  tar cvzf "$BASE"/package.tar.gz *
+
+  #EXIT IF GOOF
+  if [ $? -ne 0 ]; then
+    echo -e "Failed to create package.\nExiting..."
+    exit 1
+  fi
+
+  #RENAME ARCHIVE
+  mv "$BASE"/package.tar.gz "$BASE"/"$PACKAGE_NAME"
+
+  #CLEANUP TEMPORARY FOLDER AND FINISH
+  rm -rf "$PACKAGE_TMP"
+  echo -e "\n>> Package created as \"$PACKAGE_NAME\""
+
+  cd "$BASE"
 fi
 
 #UPGRADE THE TES3MP-DEPLOY SCRIPT

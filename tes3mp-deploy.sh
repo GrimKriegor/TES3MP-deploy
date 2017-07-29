@@ -321,12 +321,14 @@ if [ $INSTALL ]; then
       make -j$CORES
 
   else
+    if ! [ -e "$DEPENDENCIES"/terra ]; then
       echo -e "\n>> Unpacking and preparing Terra"
       cd "$DEPENDENCIES"
       unzip -o terra.zip
       rm -rf ./terra
       mv --no-target-directory terra-* terra
       rm terra.zip
+    fi
   fi
 
   cd "$BASE"

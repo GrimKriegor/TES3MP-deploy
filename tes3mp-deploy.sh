@@ -531,10 +531,6 @@ if [ $REBUILD ]; then
   #ALL DONE
   echo -e "\n\n\nAll done! Press any key to exit.\nMay Vehk bestow his blessing upon your Muatra."
 
-  if [ ! $AUTO_UPGRADE ]; then
-    read
-  fi
-
 fi
 
 #MAKE PORTABLE PACKAGE

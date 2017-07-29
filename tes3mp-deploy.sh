@@ -501,7 +501,8 @@ if [ $REBUILD ]; then
 
   echo -e "\n\n$CMAKE_PARAMS\n\n"
   cmake "$CODE" $CMAKE_PARAMS
-  ( make -j $CORES 2>&1 || exit 1 ) | tee "${BASE}"/build.log
+  set -o pipefail # so that the "tee" below would not make build always return success
+  make -j $CORES 2>&1 | tee "${BASE}"/build.log
 
   cd "$BASE"
 

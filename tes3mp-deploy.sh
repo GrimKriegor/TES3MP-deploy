@@ -324,9 +324,8 @@ if [ $INSTALL ]; then
       echo -e "\n>> Unpacking and preparing Terra"
       cd "$DEPENDENCIES"
       unzip -o terra.zip
-      rm -r ./terra
-      mkdir terra
-      mv terra-* terra
+      rm -rf ./terra
+      mv --no-target-directory terra-* terra
       rm terra.zip
   fi
 

@@ -500,7 +500,7 @@ if [ $REBUILD ]; then
 
   echo -e "\n\n$CMAKE_PARAMS\n\n"
   cmake "$CODE" $CMAKE_PARAMS
-  { make -j $CORES 2>&1 || exit 1 } | tee "${BASE}"/build.log
+  ( make -j $CORES 2>&1 || exit 1 ) | tee "${BASE}"/build.log
 
   cd "$BASE"
 

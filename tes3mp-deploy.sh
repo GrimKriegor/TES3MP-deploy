@@ -565,6 +565,12 @@ if [ $MAKE_PACKAGE ]; then
 
   PACKAGE_BINARIES=("tes3mp" "tes3mp-browser" "tes3mp-server" "openmw-launcher" "openmw-wizard" "openmw-essimporter" "openmw-iniimporter" "bsatool" "esmtool")
 
+  #EXIT IF PATCHELF IS NOT INSTALLED
+  which patchelf >/dev/null
+  if [ $? -ne 0 ]; then
+    echo -e "\nInstall \"patchelf\" before continuing"
+  fi
+
   #EXIT IF TES3MP hasn't been compiled yet
   if [ ! -f "$DEVELOPMENT"/tes3mp ]; then
     echo -e "\nTES3MP has to be built before packaging"
@@ -612,9 +618,10 @@ if [ $MAKE_PACKAGE ]; then
   #PACKAGE INFO
   PACKAGE_ARCH=$(uname -m)
   PACKAGE_SYSTEM=$(uname -o  | sed 's,/,+,g')
+  PACKAGE_DISTRO=$(lsb_release -si)
   PACKAGE_VERSION=$(cat "$CODE"/components/openmw-mp/Version.hpp | grep TES3MP_VERSION | awk -F'"' '{print $2}')
   PACKAGE_COMMIT=$(git --git-dir=$CODE/.git rev-parse @ | head -c10)
-  PACKAGE_NAME="tes3mp-$PACKAGE_SYSTEM-$PACKAGE_ARCH-release-$PACKAGE_VERSION-$PACKAGE_COMMIT"
+  PACKAGE_NAME="tes3mp-$PACKAGE_SYSTEM-$PACKAGE_ARCH-$PACKAGE_DISTRO-release-$PACKAGE_VERSION-$PACKAGE_COMMIT"
 
   #CREATE ARCHIVE
   echo -e "\nCreating archive"

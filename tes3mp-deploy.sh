@@ -310,7 +310,7 @@ if [ $INSTALL ]; then
   cmake -DCMAKE_BUILD_TYPE=Release -DRAKNET_ENABLE_DLL=OFF -DRAKNET_ENABLE_SAMPLES=OFF -DRAKNET_ENABLE_STATIC=ON -DRAKNET_GENERATE_INCLUDE_ONLY_DIR=ON ..
   make -j$CORES
 
-  ln -s "$DEPENDENCIES"/raknet/include/RakNet "$DEPENDENCIES"/raknet/include/raknet #Stop being so case sensitive
+  ln -sf "$DEPENDENCIES"/raknet/include/RakNet "$DEPENDENCIES"/raknet/include/raknet #Stop being so case sensitive
 
   cd "$BASE"
 
@@ -324,7 +324,7 @@ if [ $INSTALL ]; then
       echo -e "\n>> Unpacking and preparing Terra"
       cd "$DEPENDENCIES"
       unzip terra.zip
-      mv terra-* terra
+      mv --force terra-* terra
       rm terra.zip
   fi
 

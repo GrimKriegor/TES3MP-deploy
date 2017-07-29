@@ -198,9 +198,9 @@ if [ $INSTALL ]; then
         BUILD_BULLET=true
     ;;
 
-    "ubuntu" | "linuxmint" )
-        echo -e "You seem to be running either Ubuntu or Mint"
-        echo -e "\nUbuntu and Mint users are required to enable the OpenMW PPA repository\nhttps://wiki.openmw.org/index.php?title=Development_Environment_Setup#Ubuntu\n\nType YES if you want the script to do it automatically\nIf you already have it enabled or want to do it manually,\npress ENTER to continue"
+    "ubuntu" | "linuxmint" | "elementary" )
+        echo -e "You seem to be running Ubuntu, Mint or elementary OS"
+        echo -e "\nThe OpenMW PPA repository needs to be enabled\nhttps://wiki.openmw.org/index.php?title=Development_Environment_Setup#Ubuntu\n\nType YES if you want the script to do it automatically\nIf you already have it enabled or want to do it manually,\npress ENTER to continue"
         read INPUT
         if [ "$INPUT" == "YES" ]; then
               echo -e "\nEnabling the OpenMW PPA repository..."

@@ -569,11 +569,13 @@ if [ $MAKE_PACKAGE ]; then
   which patchelf >/dev/null
   if [ $? -ne 0 ]; then
     echo -e "\nInstall \"patchelf\" before continuing"
+    exit 1
   fi
 
   #EXIT IF TES3MP hasn't been compiled yet
   if [ ! -f "$DEVELOPMENT"/tes3mp ]; then
     echo -e "\nTES3MP has to be built before packaging"
+    exit 1
   fi
 
   cp -r "$DEVELOPMENT" "$PACKAGE_TMP"

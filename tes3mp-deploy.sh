@@ -564,6 +564,7 @@ if [ $MAKE_PACKAGE ]; then
   echo -e "\n>> Creating TES3MP package"
 
   PACKAGE_BINARIES=("tes3mp" "tes3mp-browser" "tes3mp-server" "openmw-launcher" "openmw-wizard" "openmw-essimporter" "openmw-iniimporter" "bsatool" "esmtool")
+  BLACKLISTED_LIBRARIES=("libc" "libdl" "ld-linux")
 
   #EXIT IF PATCHELF IS NOT INSTALLED
   which patchelf >/dev/null
@@ -581,16 +582,16 @@ if [ $MAKE_PACKAGE ]; then
   cp -r "$DEVELOPMENT" "$PACKAGE_TMP"
   cd "$PACKAGE_TMP"
 
-  #COPY USEFUL FILES
-  echo -e "\nCopying useful files"
-  cp -r "$KEEPERS"/* .
-  sed -i "s|home = .*|home = ./PluginExamples|g" "${PACKAGE_TMP}"/tes3mp-server-default.cfg
-
   #CLEANUP UNNEEDED FILES
   echo -e "\nCleaning up unneeded files"
   find "$PACKAGE_TMP" -type d -name "CMakeFiles" -exec rm -r "{}" \;
   find "$PACKAGE_TMP" -type l -delete
   rm ./*.bkp
+
+  #COPY USEFUL FILES
+  echo -e "\nCopying useful files"
+  cp -r "$KEEPERS"/{PluginExamples,*.cfg} .
+  sed -i "s|home = .*|home = ./PluginExamples|g" "${PACKAGE_TMP}"/tes3mp-server-default.cfg
 
   #LIST AND COPY ALL LIBS
   mkdir libraries
@@ -598,23 +599,35 @@ if [ $MAKE_PACKAGE ]; then
 
   for BINARY in "${PACKAGE_BINARIES[@]}"; do
     #Exquisite and graceful method, copy only the non-system libs
-    join <(ldd "$BINARY" | awk '{if(substr($3,0,1)=="/") print $1,$3}') <(patchelf --print-needed "$BINARY" ) | cut -d\  -f2 | \
-    xargs -d '\n' -I{} cp --copy-contents {} ./libraries
+    #join <(ldd "$BINARY" | awk '{if(substr($3,0,1)=="/") print $1,$3}') <(patchelf --print-needed "$BINARY" ) | cut -d\  -f2 | \
+    #xargs -d '\n' -I{} cp --copy-contents {} ./libraries
 
     #Alternative and quite stupid method, copy everything
-    #ldd "$BINARY" | cut -d '>' -f2 | grep '^\s*/' | sed 's/^\s*//;s/\s*(.*$//' | \
-    #while read LIB; do
-    #  echo -e "Copying library: $LIB"
-    #  cp "$LIB" ./libraries
-    #done
+    ldd "$BINARY" | cut -d '>' -f2 | grep '^\s*/' | sed 's/^\s*//;s/\s*(.*$//' | cut -d ' ' -f 1 | \
+    while read LIB; do
+      echo -e "Copying library: $LIB"
+      cp "$LIB" ./libraries
+    done
 
   done
 
+  #REMOVE BLACKLISTED LIBRARIES THAT SHOULDN'T BE RELATIVE
+  echo -e "\nRemoving blacklisted libraries"
+  for LIB in "${BLACKLISTED_LIBRARIES[@]}"; do
+    rm "$PACKAGE_TMP"/libraries/*"$LIB"*
+  done
+
   #PATCH LIBRARY PATHS ON THE EXECUTABLES
-  echo -e "\nPatching binary library paths"
+  #echo -e "\nPatching binary library paths"
+  #for BINARY in "${PACKAGE_BINARIES[@]}"; do
+  #  echo -e "Patching: $BINARY"
+  #  patchelf --set-rpath "./libraries" "$PACKAGE_TMP"/"$BINARY"
+  #done
+
+  #CREATE WRAPPERS
+  echo -e "\nCreating wrappers"
   for BINARY in "${PACKAGE_BINARIES[@]}"; do
-    echo -e "Patching: $BINARY"
-    patchelf --set-rpath "./libraries" "$PACKAGE_TMP"/"$BINARY"
+    printf "#!/bin/bash\n\nLD_LIBRARY_PATH=\$LD_LIBRARY_PATH:./libraries ./$BINARY" > run_"$BINARY".sh
   done
 
   #PACKAGE INFO

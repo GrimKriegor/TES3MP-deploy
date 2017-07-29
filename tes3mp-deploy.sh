@@ -248,7 +248,7 @@ if [ $INSTALL ]; then
   if [ $BUILD_OSG ] && ! [ -e "$DEPENDENCIES"/osg ] ; then git clone https://github.com/openscenegraph/OpenSceneGraph.git "$DEPENDENCIES"/osg --depth 1; fi
   if [ $BUILD_BULLET ] && ! [ -e "$DEPENDENCIES"/bullet ]; then git clone https://github.com/bulletphysics/bullet3.git "$DEPENDENCIES"/bullet; fi # cannot --depth 1 because we check out specific revision
   ! [ -e "$DEPENDENCIES"/raknet ] && git clone https://github.com/TES3MP/RakNet.git "$DEPENDENCIES"/raknet --depth 1
-  if [ $BUILD_TERRA ] && ! [ -e "$DEPENDENCIES"/terra ]; then git clone https://github.com/zdevito/terra.git "$DEPENDENCIES"/terra --depth 1; else wget https://github.com/zdevito/terra/releases/download/release-2016-02-26/terra-Linux-x86_64-2fa8d0a.zip -O "$DEPENDENCIES"/terra.zip; fi
+  ! [ -e "$DEPENDENCIES"/terra ] && if [ $BUILD_TERRA ]; then git clone https://github.com/zdevito/terra.git "$DEPENDENCIES"/terra --depth 1; else wget https://github.com/zdevito/terra/releases/download/release-2016-02-26/terra-Linux-x86_64-2fa8d0a.zip -O "$DEPENDENCIES"/terra.zip; fi
   ! [ -e "$KEEPERS"/PluginExamples ] && git clone https://github.com/TES3MP/PluginExamples.git "$KEEPERS"/PluginExamples
 
   #COPY STATIC SERVER AND CLIENT CONFIGS

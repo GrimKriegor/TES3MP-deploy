@@ -567,11 +567,11 @@ if [ $MAKE_PACKAGE ]; then
   BLACKLISTED_LIBRARIES=("libc" "libdl" "ld-linux")
 
   #EXIT IF PATCHELF IS NOT INSTALLED
-  which patchelf >/dev/null
-  if [ $? -ne 0 ]; then
-    echo -e "\nInstall \"patchelf\" before continuing"
-    exit 1
-  fi
+  #which patchelf >/dev/null
+  #if [ $? -ne 0 ]; then
+  #  echo -e "\nInstall \"patchelf\" before continuing"
+  #  exit 1
+  #fi
 
   #EXIT IF TES3MP hasn't been compiled yet
   if [ ! -f "$DEVELOPMENT"/tes3mp ]; then
@@ -627,7 +627,9 @@ if [ $MAKE_PACKAGE ]; then
   #CREATE WRAPPERS
   echo -e "\nCreating wrappers"
   for BINARY in "${PACKAGE_BINARIES[@]}"; do
-    printf "#!/bin/bash\n\nLD_LIBRARY_PATH=\$LD_LIBRARY_PATH:./libraries ./$BINARY" > run_"$BINARY".sh
+    WRAPPER="run_$BINARY.sh"
+    printf "#!/bin/bash\n\nLD_LIBRARY_PATH=\$LD_LIBRARY_PATH:./libraries ./$BINARY" > "$WRAPPER"
+    chmod +x "$WRAPPER"
   done
 
   #PACKAGE INFO

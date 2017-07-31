@@ -181,8 +181,8 @@ if [ $INSTALL ]; then
         echo -e "\nCreating symlinks for ncurses compatibility"
         LIBTINFO_VER=6
         NCURSES_VER="$(pacman -Q ncurses | awk '{sub(/-[0-9]+/, "", $2); print $2}')"
-        sudo ln -sf /usr/lib/libncursesw.so."$NETCURSES_VER" /usr/lib/libtinfo.so."$LIBTINFO_VER" 2> /dev/null
-        sudo ln -sf /usr/lib/libtinfo.so."$LIBTINFO_VER" /usr/lib/libtinfo.so 2> /dev/null
+        sudo ln -sf /usr/lib/libncursesw.so."$NETCURSES_VER" /usr/lib/libtinfo.so."$LIBTINFO_VER"
+        sudo ln -sf /usr/lib/libtinfo.so."$LIBTINFO_VER" /usr/lib/libtinfo.so
     ;;
 
     "debian" | "devuan" )
@@ -441,7 +441,8 @@ if [ $REBUILD ]; then
 
   cd "$DEVELOPMENT"
 
-  CMAKE_PARAMS="-DBUILD_OPENCS=OFF \
+  CMAKE_PARAMS="-Wno-dev \
+      -DBUILD_OPENCS=OFF \
       -DCMAKE_CXX_STANDARD=14 \
       -DCMAKE_CXX_FLAGS=\"-std=c++14\" \
       -DCallFF_INCLUDES="${CALLFF_LOCATION}"/include \
@@ -500,7 +501,7 @@ if [ $REBUILD ]; then
   fi
 
   echo -e "\n\n$CMAKE_PARAMS\n\n"
-  cmake "$CODE" $CMAKE_PARAMS
+  cmake "$CODE" $CMAKE_PARAMS || \
   set -o pipefail # so that the "tee" below would not make build always return success
   make -j $CORES 2>&1 | tee "${BASE}"/build.log
 

@@ -1,6 +1,8 @@
 #!/bin/bash
 
-VERSION="2.2.2"
+set -e
+
+VERSION="2.3.0"
 
 HELPTEXT="\
 TES3MP-deploy ($VERSION)
@@ -163,7 +165,7 @@ if [ $INSTALL ]; then
 
   #CREATE FOLDER HIERARCHY
   echo -e ">> Creating folder hierarchy"
-  mkdir "$DEVELOPMENT" "$KEEPERS" "$DEPENDENCIES"
+  mkdir -p "$DEVELOPMENT" "$KEEPERS" "$DEPENDENCIES"
 
   #CHECK DISTRO AND INSTALL DEPENDENCIES
   echo -e "\n>> Checking which GNU/Linux distro is installed"
@@ -241,13 +243,13 @@ if [ $INSTALL ]; then
 
   #PULL SOFTWARE VIA GIT
   echo -e "\n>> Downloading software"
-  git clone https://github.com/TES3MP/openmw-tes3mp.git "$CODE"
-  git clone https://github.com/Koncord/CallFF "$DEPENDENCIES/"callff --depth 1
-  if [ $BUILD_OSG ]; then git clone https://github.com/openscenegraph/OpenSceneGraph.git "$DEPENDENCIES"/osg --depth 1; fi
-  if [ $BUILD_BULLET ]; then git clone https://github.com/bulletphysics/bullet3.git "$DEPENDENCIES"/bullet --depth 1; fi
-  git clone https://github.com/TES3MP/RakNet.git "$DEPENDENCIES"/raknet --depth 1
-  if [ $BUILD_TERRA ]; then git clone https://github.com/zdevito/terra.git "$DEPENDENCIES"/terra --depth 1; else wget https://github.com/zdevito/terra/releases/download/release-2016-02-26/terra-Linux-x86_64-2fa8d0a.zip -O "$DEPENDENCIES"/terra.zip; fi
-  git clone https://github.com/TES3MP/PluginExamples.git "$KEEPERS"/PluginExamples
+  ! [ -e "$CODE" ] && git clone https://github.com/TES3MP/openmw-tes3mp.git "$CODE"
+  ! [ -e "$DEPENDENCIES/"callff ] &&git clone https://github.com/Koncord/CallFF "$DEPENDENCIES/"callff --depth 1
+  if [ $BUILD_OSG ] && ! [ -e "$DEPENDENCIES"/osg ] ; then git clone https://github.com/openscenegraph/OpenSceneGraph.git "$DEPENDENCIES"/osg --depth 1; fi
+  if [ $BUILD_BULLET ] && ! [ -e "$DEPENDENCIES"/bullet ]; then git clone https://github.com/bulletphysics/bullet3.git "$DEPENDENCIES"/bullet; fi # cannot --depth 1 because we check out specific revision
+  ! [ -e "$DEPENDENCIES"/raknet ] && git clone https://github.com/TES3MP/RakNet.git "$DEPENDENCIES"/raknet --depth 1
+  ! [ -e "$DEPENDENCIES"/terra ] && if [ $BUILD_TERRA ]; then git clone https://github.com/zdevito/terra.git "$DEPENDENCIES"/terra --depth 1; else wget https://github.com/zdevito/terra/releases/download/release-2016-02-26/terra-Linux-x86_64-2fa8d0a.zip -O "$DEPENDENCIES"/terra.zip; fi
+  ! [ -e "$KEEPERS"/PluginExamples ] && git clone https://github.com/TES3MP/PluginExamples.git "$KEEPERS"/PluginExamples
 
   #COPY STATIC SERVER AND CLIENT CONFIGS
   echo -e "\n>> Copying server and client configs to their permanent place"
@@ -265,32 +267,22 @@ if [ $INSTALL ]; then
 
   #BUILD CALLFF
   echo -e "\n>> Building CallFF"
-  mkdir "$DEPENDENCIES"/callff/build
+  mkdir -p "$DEPENDENCIES"/callff/build
   cd "$DEPENDENCIES"/callff/build
   cmake ..
   make -j$CORES
-
-  if [ $? -ne 0 ]; then
-        echo -e "Failed to build CallFF.\nExiting..."
-        exit 1
-  fi
 
   cd "$BASE"
 
   #BUILD OPENSCENEGRAPH
   if [ $BUILD_OSG ]; then
       echo -e "\n>> Building OpenSceneGraph"
-      mkdir "$DEPENDENCIES"/osg/build
+      mkdir -p "$DEPENDENCIES"/osg/build
       cd "$DEPENDENCIES"/osg/build
       git checkout tags/OpenSceneGraph-3.4.0
-      rm CMakeCache.txt
+      rm -f CMakeCache.txt
       cmake ..
       make -j$CORES
-
-      if [ $? -ne 0 ]; then
-        echo -e "Failed to build OpenSceneGraph.\nExiting..."
-        exit 1
-      fi
 
       cd "$BASE"
   fi
@@ -298,17 +290,12 @@ if [ $INSTALL ]; then
   #BUILD BULLET
   if [ $BUILD_BULLET ]; then
       echo -e "\n>> Building Bullet Physics"
-      mkdir "$DEPENDENCIES"/bullet/build
+      mkdir -p "$DEPENDENCIES"/bullet/build
       cd "$DEPENDENCIES"/bullet/build
       git checkout tags/2.86
-      rm CMakeCache.txt
+      rm -f CMakeCache.txt
       cmake -DCMAKE_INSTALL_PREFIX="$DEPENDENCIES"/bullet/install -DBUILD_SHARED_LIBS=1 -DINSTALL_LIBS=1 -DINSTALL_EXTRA_LIBS=1 -DCMAKE_BUILD_TYPE=Release ..
       make -j$CORES
-
-      if [ $? -ne 0 ]; then
-        echo -e "Failed to build Bullet.\nExiting..."
-        exit 1
-      fi
 
       make install
 
@@ -317,18 +304,13 @@ if [ $INSTALL ]; then
 
   #BUILD RAKNET
   echo -e "\n>> Building RakNet"
-  mkdir "$DEPENDENCIES"/raknet/build
+  mkdir -p "$DEPENDENCIES"/raknet/build
   cd "$DEPENDENCIES"/raknet/build
-  rm CMakeCache.txt
+  rm -f CMakeCache.txt
   cmake -DCMAKE_BUILD_TYPE=Release -DRAKNET_ENABLE_DLL=OFF -DRAKNET_ENABLE_SAMPLES=OFF -DRAKNET_ENABLE_STATIC=ON -DRAKNET_GENERATE_INCLUDE_ONLY_DIR=ON ..
   make -j$CORES
 
-  if [ $? -ne 0 ]; then
-    echo -e "Failed to build RakNet.\nExiting..."
-    exit 1
-  fi
-
-  ln -s "$DEPENDENCIES"/raknet/include/RakNet "$DEPENDENCIES"/raknet/include/raknet #Stop being so case sensitive
+  ln -sf "$DEPENDENCIES"/raknet/include/RakNet "$DEPENDENCIES"/raknet/include/raknet #Stop being so case sensitive
 
   cd "$BASE"
 
@@ -338,16 +320,15 @@ if [ $INSTALL ]; then
       cd "$DEPENDENCIES"/terra/
       make -j$CORES
 
-      if [ $? -ne 0 ]; then
-        echo -e "Failed to build Terra.\nExiting..."
-        exit 1
-      fi
   else
+    if ! [ -e "$DEPENDENCIES"/terra ]; then
       echo -e "\n>> Unpacking and preparing Terra"
       cd "$DEPENDENCIES"
-      unzip terra.zip
-      mv terra-* terra
+      unzip -o terra.zip
+      rm -rf ./terra
+      mv --no-target-directory terra-* terra
       rm terra.zip
+    fi
   fi
 
   cd "$BASE"
@@ -456,7 +437,7 @@ if [ $REBUILD ]; then
   echo -e "\n>> Doing a clean build of TES3MP"
 
   rm -r "$DEVELOPMENT"
-  mkdir "$DEVELOPMENT"
+  mkdir -p "$DEVELOPMENT"
 
   cd "$DEVELOPMENT"
 
@@ -520,6 +501,7 @@ if [ $REBUILD ]; then
 
   echo -e "\n\n$CMAKE_PARAMS\n\n"
   cmake "$CODE" $CMAKE_PARAMS
+  set -o pipefail # so that the "tee" below would not make build always return success
   make -j $CORES 2>&1 | tee "${BASE}"/build.log
 
   cd "$BASE"
@@ -552,10 +534,6 @@ if [ $REBUILD ]; then
 
   #ALL DONE
   echo -e "\n\n\nAll done! Press any key to exit.\nMay Vehk bestow his blessing upon your Muatra."
-
-  if [ ! $AUTO_UPGRADE ]; then
-    read
-  fi
 
 fi
 
@@ -594,7 +572,7 @@ if [ $MAKE_PACKAGE ]; then
   sed -i "s|home = .*|home = ./PluginExamples|g" "${PACKAGE_TMP}"/tes3mp-server-default.cfg
 
   #LIST AND COPY ALL LIBS
-  mkdir libraries
+  mkdir -p libraries
   echo -e "\nCopying needed libraries"
 
   for BINARY in "${PACKAGE_BINARIES[@]}"; do

@@ -14,4 +14,4 @@ Config files and plugins are kept in a separate folder, avoiding their deletion 
 
 **Currently supported systems:** Arch Linux, Parabola GNU/Linux-libre, Manjaro, Debian, Devuan, Ubuntu, Linux Mint and Fedora.
 
-Big thanks to Testman and the TES3MP community for their intense testing, debugging and suggestions.
+Big thanks to Testman, Shnatsel and the TES3MP community for their intense testing, debugging contributions and suggestions.

@@ -342,7 +342,7 @@ if [ $UPGRADE ]; then
   echo -e "\n>> Checking the git repository for changes"
   cd "$CODE"
   git remote update
-  if [ $(git rev-parse @)" != "$(git rev-parse @{u}) ]; then
+  if [ $(git rev-parse @) != $(git rev-parse @{u}) ]; then
     echo -e "\nNEW CHANGES on the git repository"
     GIT_CHANGES=true
   else

@@ -2,7 +2,7 @@
 
 set -e
 
-VERSION="2.3.0"
+VERSION="2.3.1"
 
 HELPTEXT="\
 TES3MP-deploy ($VERSION)
@@ -342,8 +342,7 @@ if [ $UPGRADE ]; then
   echo -e "\n>> Checking the git repository for changes"
   cd "$CODE"
   git remote update
-  test "$(git rev-parse @)" != "$(git rev-parse @{u})" || \
-  if [ $? -eq 0 ]; then
+  if [ $(git rev-parse @)" != "$(git rev-parse @{u}) ]; then
     echo -e "\nNEW CHANGES on the git repository"
     GIT_CHANGES=true
   else

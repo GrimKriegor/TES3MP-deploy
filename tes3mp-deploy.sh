@@ -2,7 +2,7 @@
 
 set -e
 
-VERSION="2.3.1"
+VERSION="2.3.2"
 
 HELPTEXT="\
 TES3MP-deploy ($VERSION)
@@ -230,7 +230,7 @@ if [ $INSTALL ]; then
     ;;
 
     *)
-        echo -e "Could not determine your GNU/Linux distro, press ENTER to continue without installing dependencies"
+        echo -e "Your GNU/Linux distro is not supported yet, press ENTER to continue without installing dependency packages"
         read
     ;;
   esac

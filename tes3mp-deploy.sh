@@ -500,7 +500,7 @@ if [ $REBUILD ]; then
   fi
 
   echo -e "\n\n$CMAKE_PARAMS\n\n"
-  cmake "$CODE" $CMAKE_PARAMS || \
+  cmake "$CODE" $CMAKE_PARAMS || true
   set -o pipefail # so that the "tee" below would not make build always return success
   make -j $CORES 2>&1 | tee "${BASE}"/build.log
 
@@ -542,14 +542,9 @@ if [ $MAKE_PACKAGE ]; then
   echo -e "\n>> Creating TES3MP package"
 
   PACKAGE_BINARIES=("tes3mp" "tes3mp-browser" "tes3mp-server" "openmw-launcher" "openmw-wizard" "openmw-essimporter" "openmw-iniimporter" "bsatool" "esmtool")
-  BLACKLISTED_LIBRARIES=("libc" "libdl" "ld-linux")
-
-  #EXIT IF PATCHELF IS NOT INSTALLED
-  #which patchelf >/dev/null
-  #if [ $? -ne 0 ]; then
-  #  echo -e "\nInstall \"patchelf\" before continuing"
-  #  exit 1
-  #fi
+  LIBRARIES_OPENMW=("libavcodec.so" "libavformat.so" "libavutil.so" "libboost_filesystem.so" "libboost_program_options.so" "libboost_system.so" "libboost_thread.so" "libBulletCollision.so" "libbz2.so" "libfreetype.so" "libLinearMath.so" "libMyGUIEngine.so" "libopenal.so" "libOpenThreads.so" "libosgAnimation.so" "libosgDB.so" "libosgFX.so" "libosgGA.so" "libosgParticle.so" "libosg.so" "libosgText.so" "libosgUtil.so" "libosgViewer.so" "libosgWidget.so" "libSDL2.so" "libswresample.so" "libswscale.so" "libts.so" "libtxc_dxtn.so" "libunshield.so" "libuuid.so" "osgPlugins")
+  LIBRARIES_TES3MP=("libcallff.a" "libRakNetLibStatic.a" "libterra.a")
+  LIBRARIES_EXTRA=("libx265.so" "libwebpmux.so" "libwebp.so" "libvpx.so" "libtwolame.so" "libshine.so" "libopenjpeg.so" "libcrystalhd.so" "libssh-gcrypt.so" "libbluray.so" "libchromaprint.so" "libpng16.so")
 
   #EXIT IF TES3MP hasn't been compiled yet
   if [ ! -f "$DEVELOPMENT"/tes3mp ]; then
@@ -562,9 +557,9 @@ if [ $MAKE_PACKAGE ]; then
 
   #CLEANUP UNNEEDED FILES
   echo -e "\nCleaning up unneeded files"
-  find "$PACKAGE_TMP" -type d -name "CMakeFiles" -exec rm -r "{}" \;
-  find "$PACKAGE_TMP" -type l -delete
-  rm ./*.bkp
+  find "$PACKAGE_TMP" -type d -name "CMakeFiles" -exec rm -rf "{}" \; || true
+  find "$PACKAGE_TMP" -type l -exec rm -f "{}" \; || true
+  rm -f ./*.bkp
 
   #COPY USEFUL FILES
   echo -e "\nCopying useful files"
@@ -572,43 +567,33 @@ if [ $MAKE_PACKAGE ]; then
   sed -i "s|home = .*|home = ./PluginExamples|g" "${PACKAGE_TMP}"/tes3mp-server-default.cfg
 
   #LIST AND COPY ALL LIBS
-  mkdir -p libraries
+  mkdir -p lib
   echo -e "\nCopying needed libraries"
 
-  for BINARY in "${PACKAGE_BINARIES[@]}"; do
-    #Exquisite and graceful method, copy only the non-system libs
+  LIBRARIES=("${LIBRARIES_OPENMW[@]}" "${LIBRARIES_TES3MP[@]}" "${LIBRARIES_EXTRA[@]}")
+  for LIB in "${LIBRARIES[@]}"; do
+    find /lib /usr/lib "$DEPENDENCIES" -name "$LIB*" -exec cp -r --preserve=links {} ./lib \; 2> /dev/null || true
+  done
+
+  #for BINARY in "${PACKAGE_BINARIES[@]}"; do
     #join <(ldd "$BINARY" | awk '{if(substr($3,0,1)=="/") print $1,$3}') <(patchelf --print-needed "$BINARY" ) | cut -d\  -f2 | \
-    #xargs -d '\n' -I{} cp --copy-contents {} ./libraries
-
-    #Alternative and quite stupid method, copy everything
-    ldd "$BINARY" | cut -d '>' -f2 | grep '^\s*/' | sed 's/^\s*//;s/\s*(.*$//' | cut -d ' ' -f 1 | \
-    while read LIB; do
-      echo -e "Copying library: $LIB"
-      cp "$LIB" ./libraries
-    done
-
-  done
-
-  #REMOVE BLACKLISTED LIBRARIES THAT SHOULDN'T BE RELATIVE
-  echo -e "\nRemoving blacklisted libraries"
-  for LIB in "${BLACKLISTED_LIBRARIES[@]}"; do
-    rm "$PACKAGE_TMP"/libraries/*"$LIB"*
-  done
+    #xargs -d '\n' -I{} cp --copy-contents {} ./lib
+  #done
 
   #PATCH LIBRARY PATHS ON THE EXECUTABLES
   #echo -e "\nPatching binary library paths"
   #for BINARY in "${PACKAGE_BINARIES[@]}"; do
   #  echo -e "Patching: $BINARY"
-  #  patchelf --set-rpath "./libraries" "$PACKAGE_TMP"/"$BINARY"
+  #  patchelf --set-rpath "./lib" "$PACKAGE_TMP"/"$BINARY"
   #done
 
   #CREATE WRAPPERS
   echo -e "\nCreating wrappers"
   for BINARY in "${PACKAGE_BINARIES[@]}"; do
-    WRAPPER="run_$BINARY.sh"
-    printf "#!/bin/bash\n\nLD_LIBRARY_PATH=\$LD_LIBRARY_PATH:./libraries ./$BINARY" > "$WRAPPER"
-    chmod +x "$WRAPPER"
+    WRAPPER="$BINARY.sh"
+    printf "#!/bin/bash\n\nGAMEDIR=\"\$(dirname \$0)\"\ncd \"\$GAMEDIR\"\nLD_LIBRARY_PATH=\"./lib\" ./$BINARY" > "$WRAPPER"
   done
+  chmod 755 *.sh
 
   #PACKAGE INFO
   PACKAGE_ARCH=$(uname -m)
@@ -625,12 +610,6 @@ if [ $MAKE_PACKAGE ]; then
   mv "$PACKAGE_TMP" "$BASE"/TES3MP
   PACKAGE_TMP="$BASE"/TES3MP
   tar cvzf "$BASE"/package.tar.gz --directory="$BASE" TES3MP/
-
-  #EXIT IF GOOF
-  if [ $? -ne 0 ]; then
-    echo -e "Failed to create package.\nExiting..."
-    exit 1
-  fi
 
   #RENAME ARCHIVE
   mv "$BASE"/package.tar.gz "$BASE"/"$PACKAGE_NAME".tar.gz

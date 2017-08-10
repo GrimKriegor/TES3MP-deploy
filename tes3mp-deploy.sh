@@ -172,10 +172,10 @@ if [ $INSTALL ]; then
   case $DISTRO in
     "arch" | "parabola" | "manjarolinux" )
         echo -e "You seem to be running either Arch Linux, Parabola GNU/Linux-libre or Manjaro"
-        sudo pacman -Sy unzip wget git cmake boost openal openscenegraph mygui bullet qt5-base ffmpeg sdl2 unshield libxkbcommon-x11 ncurses #clang35 llvm35
+        sudo pacman -Sy --needed unzip wget git cmake boost openal openscenegraph mygui bullet qt5-base ffmpeg sdl2 unshield libxkbcommon-x11 ncurses #clang35 llvm35
 
         if [ ! -d "/usr/share/licenses/gcc-libs-multilib/" ]; then
-              sudo pacman -S gcc-libs
+              sudo pacman -S --needed gcc-libs
         fi
 
         echo -e "\nCreating symlinks for ncurses compatibility"

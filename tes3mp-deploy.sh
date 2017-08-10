@@ -441,6 +441,7 @@ if [ $REBUILD ]; then
   cd "$DEVELOPMENT"
 
   CMAKE_PARAMS="-Wno-dev \
+      -DCMAKE_BUILD_TYPE=Release \
       -DBUILD_OPENCS=OFF \
       -DCMAKE_CXX_STANDARD=14 \
       -DCMAKE_CXX_FLAGS=\"-std=c++14\" \
@@ -542,9 +543,9 @@ if [ $MAKE_PACKAGE ]; then
   echo -e "\n>> Creating TES3MP package"
 
   PACKAGE_BINARIES=("tes3mp" "tes3mp-browser" "tes3mp-server" "openmw-launcher" "openmw-wizard" "openmw-essimporter" "openmw-iniimporter" "bsatool" "esmtool")
-  LIBRARIES_OPENMW=("libavcodec.so" "libavformat.so" "libavutil.so" "libboost_filesystem.so" "libboost_program_options.so" "libboost_system.so" "libboost_thread.so" "libBulletCollision.so" "libbz2.so" "libfreetype.so" "libLinearMath.so" "libMyGUIEngine.so" "libopenal.so" "libOpenThreads.so" "libosgAnimation.so" "libosgDB.so" "libosgFX.so" "libosgGA.so" "libosgParticle.so" "libosg.so" "libosgText.so" "libosgUtil.so" "libosgViewer.so" "libosgWidget.so" "libSDL2.so" "libswresample.so" "libswscale.so" "libts.so" "libtxc_dxtn.so" "libunshield.so" "libuuid.so" "osgPlugins")
+  LIBRARIES_OPENMW=("libavcodec.so" "libavformat.so" "libavutil.so" "libboost_filesystem.so" "libboost_program_options.so" "libboost_system.so" "libboost_thread.so" "libBulletCollision.so" "libbz2.so" "libfreetype.so" "libLinearMath.so" "libMyGUIEngine.so" "libopenal.so" "libOpenThreads.so" "libosgAnimation.so" "libosgDB.so" "libosgFX.so" "libosgGA.so" "libosgParticle.so" "libosg.so" "libosgText.so" "libosgUtil.so" "libosgViewer.so" "libosgWidget.so" "libSDL2" "libswresample.so" "libswscale.so" "libts.so" "libtxc_dxtn.so" "libunshield.so" "libuuid.so" "osgPlugins")
   LIBRARIES_TES3MP=("libcallff.a" "libRakNetLibStatic.a" "libterra.a")
-  LIBRARIES_EXTRA=("libx265.so" "libwebpmux.so" "libwebp.so" "libvpx.so" "libtwolame.so" "libshine.so" "libopenjpeg.so" "libcrystalhd.so" "libssh-gcrypt.so" "libbluray.so" "libchromaprint.so" "libpng16.so")
+  LIBRARIES_EXTRA=("libx265.so" "libwebpmux.so" "libwebp.so" "libvpx.so" "libtwolame.so" "libshine.so" "libopenjpeg.so" "libcrystalhd.so" "libssh-gcrypt.so" "libbluray.so" "libchromaprint.so" "libpng16.so" "libpng12.so" "libsndio.so" "libopenmpt.so")
 
   #EXIT IF TES3MP hasn't been compiled yet
   if [ ! -f "$DEVELOPMENT"/tes3mp ]; then
@@ -572,7 +573,18 @@ if [ $MAKE_PACKAGE ]; then
 
   LIBRARIES=("${LIBRARIES_OPENMW[@]}" "${LIBRARIES_TES3MP[@]}" "${LIBRARIES_EXTRA[@]}")
   for LIB in "${LIBRARIES[@]}"; do
-    find /lib /usr/lib "$DEPENDENCIES" -name "$LIB*" -exec cp -r --preserve=links {} ./lib \; 2> /dev/null || true
+    find /lib /usr/lib /usr/local/lib /usr/local/lib64 "$DEPENDENCIES" -name "$LIB*" -exec cp -r --preserve=links "{}" ./lib \; 2> /dev/null || true
+    echo -ne "$LIB\033[0K\r"
+  done
+
+  #MAKE SURE ALL SYMLINKS ARE RELATIVE
+  echo -e "\nMaking sure all symlinks are relative"
+  find ./lib -type l | while read LINK; do
+    LINK_BASENAME="$(basename $LINK)"
+    LINK_TARGET="$(readlink -f $LINK)"
+    LINK_TARGET_BASENAME="$(basename $LINK_TARGET)"
+    ln -sf ./"$LINK_TARGET_BASENAME" ./lib/"$LINK_BASENAME"
+    echo -ne "$LINK\033[0K\r"
   done
 
   #for BINARY in "${PACKAGE_BINARIES[@]}"; do

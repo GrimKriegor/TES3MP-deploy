@@ -562,6 +562,7 @@ if [ $MAKE_PACKAGE ]; then
   #find "$PACKAGE_TMP" -type d -name ".git" -exec rm -rf "{}" \; || true
   find "$PACKAGE_TMP" -type l -exec rm -f "{}" \; || true
   rm -f ./*.bkp
+  rm -f ./*.desktop
 
   #COPY USEFUL FILES
   echo -e "\nCopying useful files"
@@ -600,14 +601,6 @@ if [ $MAKE_PACKAGE ]; then
   #  patchelf --set-rpath "./lib" "$PACKAGE_TMP"/"$BINARY"
   #done
 
-  #CREATE WRAPPERS
-  echo -e "\nCreating wrappers"
-  for BINARY in "${PACKAGE_BINARIES[@]}"; do
-    WRAPPER="$BINARY.sh"
-    printf "#!/bin/bash\n\nGAMEDIR=\"\$(dirname \$0)\"\ncd \"\$GAMEDIR\"\nLD_LIBRARY_PATH=\"./lib\" ./$BINARY" > "$WRAPPER"
-  done
-  chmod 755 *.sh
-
   #PACKAGE INFO
   PACKAGE_ARCH=$(uname -m)
   PACKAGE_SYSTEM=$(uname -o  | sed 's,/,+,g')
@@ -617,6 +610,16 @@ if [ $MAKE_PACKAGE ]; then
   PACKAGE_NAME="tes3mp-$PACKAGE_SYSTEM-$PACKAGE_ARCH-release-$PACKAGE_VERSION-$PACKAGE_COMMIT-$PACKAGE_DISTRO-$USER"
   PACKAGE_DATE="$(date +"%Y-%m-%d")"
   echo -e "TES3MP $PACKAGE_VERSION ($PACKAGE_COMMIT) built on $PACKAGE_SYSTEM $PACKAGE_ARCH ($PACKAGE_DISTRO) on $PACKAGE_DATE by $USER" > "$PACKAGE_TMP"/tes3mp-package-info.txt
+
+  #CREATE WRAPPERS
+  echo -e "\nCreating wrappers"
+  for BINARY in "${PACKAGE_BINARIES[@]}"; do
+    WRAPPER="$BINARY"
+    BINARY_RENAME="$BINARY.$PACKAGE_ARCH"
+    mv "$BINARY" "$BINARY_RENAME"
+    printf "#!/bin/bash\n\nGAMEDIR=\"\$(dirname \$0)\"\ncd \"\$GAMEDIR\"\nLD_LIBRARY_PATH=\"./lib\" ./$BINARY_RENAME \"\$@\"" > "$WRAPPER"
+  done
+  chmod 755 *
 
   #CREATE ARCHIVE
   echo -e "\nCreating archive"

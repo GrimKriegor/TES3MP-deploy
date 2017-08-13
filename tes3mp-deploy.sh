@@ -25,6 +25,7 @@ Options:
   -c, --cores N			Use N cores for building TES3MP and its dependencies
   -v, --commit			HASH Checkout and build a specific TES3MP commit
   -e, --version-string		STRING Set the version string for compatibility
+  -m, --build-master		Build the master server
 
 Please report bugs in the GitHub issue page or directly on the TES3MP Discord.
 https://github.com/GrimKriegor/TES3MP-deploy
@@ -118,6 +119,12 @@ else
       fi
     ;;
 
+    #BUILD MASTER SERVER
+    -m | --build-master )
+      BUILD_MASTER=true
+      touch .buildmaster
+    ;;
+
     esac
     shift
   done
@@ -158,6 +165,11 @@ BULLET_LOCATION="$DEPENDENCIES"/bullet
 #CHECK IF THIS IS A SERVER ONLY INSTALL
 if [ -f "$BASE"/.serveronly ]; then
   SERVER_ONLY=true
+fi
+
+#CHECK IF MASTER SERVER IS SUPPOSED TO BE BUILT
+if [ -f "$BASE"/.buildmaster ]; then
+  BUILD_MASTER=true
 fi
 
 #INSTALL MODE
@@ -498,6 +510,11 @@ if [ $REBUILD ]; then
       -DBUILD_MYGUI_PLUGIN=OFF \
       -DBUILD_OPENMW=OFF \
       -DBUILD_WIZARD=OFF"
+  fi
+
+  if [ $BUILD_MASTER ]; then
+    CMAKE_PARAMS="$CMAKE_PARAMS \
+      -DBUILD_MASTER=ON"
   fi
 
   echo -e "\n\n$CMAKE_PARAMS\n\n"

@@ -2,7 +2,7 @@
 
 set -e
 
-VERSION="2.4.0"
+VERSION="2.5.0"
 
 HELPTEXT="\
 TES3MP-deploy ($VERSION)

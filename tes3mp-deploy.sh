@@ -579,8 +579,9 @@ if [ $MAKE_PACKAGE ]; then
   find "$PACKAGE_TMP" -type d -name "CMakeFiles" -exec rm -rf "{}" \; || true
   #find "$PACKAGE_TMP" -type d -name ".git" -exec rm -rf "{}" \; || true
   find "$PACKAGE_TMP" -type l -exec rm -f "{}" \; || true
-  rm -f ./*.bkp
-  rm -f ./*.desktop
+  rm -f "$PACKAGE_TMP"/{Make*,CMake*,*cmake}
+  rm -f "$PACKAGE_TMP"/{*.bkp,*.desktop,*.xml}
+  rm -rf "$PACKAGE_TMP"/{apps,components,docs,extern,files}
 
   #COPY USEFUL FILES
   echo -e "\nCopying useful files"

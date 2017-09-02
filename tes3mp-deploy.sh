@@ -154,6 +154,7 @@ DEVELOPMENT="$BASE/build"
 KEEPERS="$BASE/keepers"
 DEPENDENCIES="$BASE/dependencies"
 PACKAGE_TMP="$BASE/package"
+EXTRA="$BASE/extra"
 
 #DEPENDENCY LOCATIONS
 CALLFF_LOCATION="$DEPENDENCIES"/callff
@@ -585,6 +586,12 @@ if [ $MAKE_PACKAGE ]; then
   echo -e "\nCopying useful files"
   cp -r "$KEEPERS"/{PluginExamples,*.cfg} .
   sed -i "s|home = .*|home = ./PluginExamples|g" "${PACKAGE_TMP}"/tes3mp-server-default.cfg
+
+  #COPY WHATEVER EXTRA FILES ARE CURRENTLY PRESENT
+  if [ -d "$EXTRA" ]; then
+    echo -e "\nCopying some extra files"
+    cp -r --preserve=links "$EXTRA"/* "$PACKAGE_TMP"/
+  fi
 
   #LIST AND COPY ALL LIBS
   mkdir -p lib

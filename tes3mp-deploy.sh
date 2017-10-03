@@ -209,7 +209,7 @@ if [ $INSTALL ]; then
         #      BUILD_OSG=true
         #      sudo apt-get build-dep openscenegraph libopenscenegraph-dev
         #fi
-        sed -i "s,# deb-src,deb-src,g" /etc/apt/sources.list
+        sudo sed -i "s,# deb-src,deb-src,g" /etc/apt/sources.list
         sudo apt-get build-dep bullet
         BUILD_BULLET=true
     ;;
@@ -225,7 +225,7 @@ if [ $INSTALL ]; then
         fi
         sudo apt-get update
         sudo apt-get install unzip wget git cmake libopenal-dev qt5-default libqt5opengl5-dev libopenthreads-dev libopenscenegraph-3.4-dev libsdl2-dev libqt4-dev libboost-filesystem-dev libboost-thread-dev libboost-program-options-dev libboost-system-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libswresample-dev libmygui-dev libunshield-dev cmake build-essential libqt4-opengl-dev g++ libncurses5-dev #llvm-3.5 clang-3.5 libclang-3.5-dev llvm-3.5-dev libbullet-dev
-        sed -i "s,# deb-src,deb-src,g" /etc/apt/sources.list
+        sudo sed -i "s,# deb-src,deb-src,g" /etc/apt/sources.list
         sudo apt-get build-dep bullet
         BUILD_BULLET=true
     ;;

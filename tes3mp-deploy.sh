@@ -2,7 +2,7 @@
 
 set -e
 
-VERSION="2.5.1"
+VERSION="2.5.2"
 
 HELPTEXT="\
 TES3MP-deploy ($VERSION)
@@ -544,12 +544,12 @@ if [ $REBUILD ]; then
     FILEPATH=$file
     FILENAME=$(basename $file)
     mv "$DEVELOPMENT/$FILENAME" "$DEVELOPMENT/$FILENAME.bkp" 2> /dev/null
-    ln -s "$KEEPERS/$FILENAME" "$DEVELOPMENT/"
+    ln -sf "../keepers/$FILENAME" "$DEVELOPMENT/"
   done
 
   #CREATE SYMLINKS FOR RESOURCES INSIDE THE CONFIG FOLDER
   echo -e "\n>> Creating symlinks for resources inside the config folder"
-  ln -s "$DEVELOPMENT"/resources "$KEEPERS"/resources 2> /dev/null
+  ln -sf ../"$(basename $DEVELOPMENT)"/resources "$KEEPERS"/resources 2> /dev/null
 
   #CREATE USEFUL SHORTCUTS ON THE BASE DIRECTORY
   echo -e "\n>> Creating useful shortcuts on the base directory"

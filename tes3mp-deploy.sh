@@ -124,6 +124,11 @@ else
       BUILD_MASTER=true
       touch .buildmaster
     ;;
+    
+    #TELL CMAKE LOOK FOR DEPENDENCIES ON /USR/LOCAL/
+    --cmake-local )
+      CMAKE_LOCAL=true
+    ;;
 
     esac
     shift
@@ -528,6 +533,13 @@ if [ $REBUILD ]; then
   if [ $BUILD_MASTER ]; then
     CMAKE_PARAMS="$CMAKE_PARAMS \
       -DBUILD_MASTER=ON"
+  fi
+
+  if [ $CMAKE_LOCAL ]; then
+    CMAKE_PARAMS="$CMAKE_PARAMS \
+      -DCMAKE_LIBRARY_PATH=/usr/local/lib64 \
+      -DBOOST_ROOT=/usr/local \
+      -DBoost_NO_SYSTEM_PATHS=ON"
   fi
 
   echo -e "\n\n$CMAKE_PARAMS\n\n"

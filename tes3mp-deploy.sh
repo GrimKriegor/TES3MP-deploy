@@ -668,7 +668,7 @@ GAMEDIR="$(cd "$(dirname "$0")"; pwd -P)"
 TES3MP_HOME="$HOME/.config/openmw/"
 
 # Locate and or copy the config files
-if [[ -f $TES3MP_HOME/tes3mp-client.cfg && -f $TES3MP_HOME/tes3mp-server.cfg ]]; then
+if [[ -f $TES3MP_HOME/tes3mp-client.cfg && -f $TES3MP_HOME/tes3mp-server.cfg && -d $TES3MP_HOME/PluginExamples && -L $TES3MP_HOME/resources ]]; then
   echo -e "Loading config files from the home directory"
 else
   if [[ -f tes3mp-client-default.cfg && -f tes3mp-server-default.cfg ]]; then

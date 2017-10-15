@@ -668,18 +668,18 @@ GAMEDIR="$(cd "$(dirname "$0")"; pwd -P)"
 TES3MP_HOME="$HOME/.config/openmw/"
 
 # Locate and or copy the config files
-if [[ -f tes3mp-client-default.cfg && -f tes3mp-server-default.cfg ]]; then
-    echo -e "Loading config files from the game directory"
+if [[ -f $TES3MP_HOME/tes3mp-client.cfg && -f $TES3MP_HOME/tes3mp-server.cfg ]]; then
+  echo -e "Loading config files from the home directory"
 else
-    if [[ -f $TES3MP_HOME/tes3mp-client.cfg && -f $TES3MP_HOME/tes3mp-server.cfg ]]; then
-        echo -e "Loading config files from the home directory"
-    else
-        echo -e "Copying config files to the home directory"
-        cp -f tes3mp-client-default.cfg.example "$TES3MP_HOME"/tes3mp-client.cfg
-        cp -f tes3mp-server-default.cfg.example "$TES3MP_HOME"/tes3mp-server.cfg
-        cp -rf PluginExamples/ "$TES3MP_HOME"/
-        ln -sf "$GAMEDIR"/resources "$TES3MP_HOME"/
-    fi
+  if [[ -f tes3mp-client-default.cfg && -f tes3mp-server-default.cfg ]]; then
+      echo -e "Loading config files from the game directory"
+  else
+      echo -e "Copying config files to the home directory"
+      cp -f tes3mp-client-default.cfg.example "$TES3MP_HOME"/tes3mp-client.cfg
+      cp -f tes3mp-server-default.cfg.example "$TES3MP_HOME"/tes3mp-server.cfg
+      cp -rf PluginExamples/ "$TES3MP_HOME"/
+      ln -sf "$GAMEDIR"/resources "$TES3MP_HOME"/
+  fi
 fi
 EOF
 

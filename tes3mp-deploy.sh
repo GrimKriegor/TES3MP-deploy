@@ -124,8 +124,8 @@ else
       BUILD_MASTER=true
       touch .buildmaster
     ;;
-    
-    #TELL CMAKE LOOK FOR DEPENDENCIES ON /USR/LOCAL/
+
+    #TELL CMAKE TO LOOK FOR DEPENDENCIES ON /USR/LOCAL/
     --cmake-local )
       CMAKE_LOCAL=true
     ;;

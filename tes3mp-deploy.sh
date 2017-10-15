@@ -660,13 +660,36 @@ if [ $MAKE_PACKAGE ]; then
   PACKAGE_DATE="$(date +"%Y-%m-%d")"
   echo -e "TES3MP $PACKAGE_VERSION ($PACKAGE_COMMIT) built on $PACKAGE_SYSTEM $PACKAGE_ARCH ($PACKAGE_DISTRO) on $PACKAGE_DATE by $USER" > "$PACKAGE_TMP"/tes3mp-package-info.txt
 
+  #CREATE PRE-LAUNCH SCRIPT
+  cat << 'EOF' > tes3mp-prelaunch
+#!/bin/bash
+
+GAMEDIR="$(cd "$(dirname "$0")"; pwd -P)"
+TES3MP_HOME="$HOME/.config/openmw/"
+
+# Locate and or copy the config files
+if [[ -f tes3mp-client-default.cfg && -f tes3mp-server-default.cfg ]]; then
+    echo -e "Loading config files from the game directory"
+else
+    if [[ -f $TES3MP_HOME/tes3mp-client.cfg && -f $TES3MP_HOME/tes3mp-server.cfg ]]; then
+        echo -e "Loading config files from the home directory"
+    else
+        echo -e "Copying config files to the home directory"
+        cp -f tes3mp-client-default.cfg.example "$TES3MP_HOME"/tes3mp-client.cfg
+        cp -f tes3mp-server-default.cfg.example "$TES3MP_HOME"/tes3mp-server.cfg
+        cp -rf PluginExamples/ "$TES3MP_HOME"/
+        ln -sf "$GAMEDIR"/resources "$TES3MP_HOME"/
+    fi
+fi
+EOF
+
   #CREATE WRAPPERS
   echo -e "\nCreating wrappers"
   for BINARY in "${PACKAGE_BINARIES[@]}"; do
     WRAPPER="$BINARY"
     BINARY_RENAME="$BINARY.$PACKAGE_ARCH"
     mv "$BINARY" "$BINARY_RENAME"
-    printf "#!/bin/bash\n\nGAMEDIR=\"\$(dirname \$0)\"\ncd \"\$GAMEDIR\"\nLD_LIBRARY_PATH=\"./lib\" ./$BINARY_RENAME \"\$@\"" > "$WRAPPER"
+    printf "#!/bin/bash\n\nGAMEDIR=\"\$(dirname \$0)\"\ncd \"\$GAMEDIR\"\nif test -f ./tes3mp-prelaunch; then bash ./tes3mp-prelaunch; fi\nLD_LIBRARY_PATH=\"./lib\" ./$BINARY_RENAME \"\$@\"" > "$WRAPPER"
   done
   chmod 755 *
 

@@ -664,22 +664,48 @@ if [ $MAKE_PACKAGE ]; then
   cat << 'EOF' > tes3mp-prelaunch
 #!/bin/bash
 
+ARGS="$*"
 GAMEDIR="$(cd "$(dirname "$0")"; pwd -P)"
-TES3MP_HOME="$HOME/.config/openmw/"
+TES3MP_HOME="$HOME/.config/openmw"
 
-# Locate and or copy the config files
-if [[ -f $TES3MP_HOME/tes3mp-client.cfg && -f $TES3MP_HOME/tes3mp-server.cfg && -d $TES3MP_HOME/PluginExamples && -L $TES3MP_HOME/resources ]]; then
-  echo -e "Loading config files from the home directory"
+# If there are config files in the home directory, load those
+# Otherwise check the package/installation directory and load those
+# Otherwise copy them to the home directory
+if [[ "$ARGS" = 'tes3mp-server' ]]; then
+    if [[ -f "$TES3MP_HOME"/tes3mp-server.cfg ]]; then
+        echo -e "Loading server config from the home directory"
+        LOADING_FROM_HOME=true
+    elif [[ -f "$GAMEDIR"/tes3mp-server-default.cfg ]]; then
+        echo -e "Loading server config from the package directory"
+    else
+        echo -e "Server config not found in home and package directory, trying to copy from .example"
+        cp -f tes3mp-server-default.cfg.example "$TES3MP_HOME"/tes3mp-server.cfg
+        LOADING_FROM_HOME=true
+    fi
+    if [[ $LOADING_FROM_HOME ]]; then
+        if [[ -d "$TES3MP_HOME"/PluginExamples ]]; then
+            echo -e "Loading PluginExamples folder from the home directory"
+        else
+            echo -e "PluginExamples folder not found in home directory, copying from package directory"
+            cp -rf "$GAMEDIR"/PluginExamples/ "$TES3MP_HOME"/
+            sed -i "s|home = .*|home = $TES3MP_HOME/PluginExamples |g" "$TES3MP_HOME"/tes3mp-server.cfg
+        fi
+        #if [[ -e "$TES3MP_HOME"/resources ]]; then
+        #    echo -e "Loading resources folder from the home directory"
+        #else
+        #    echo -e "Resources folder not found in home directory, linking from package directory"
+        #    ln -sf "$GAMEDIR"/resources "$TES3MP_HOME"/
+        #fi
+    fi
 else
-  if [[ -f tes3mp-client-default.cfg && -f tes3mp-server-default.cfg ]]; then
-      echo -e "Loading config files from the game directory"
-  else
-      echo -e "Copying config files to the home directory"
-      cp -f tes3mp-client-default.cfg.example "$TES3MP_HOME"/tes3mp-client.cfg
-      cp -f tes3mp-server-default.cfg.example "$TES3MP_HOME"/tes3mp-server.cfg
-      cp -rf PluginExamples/ "$TES3MP_HOME"/
-      ln -sf "$GAMEDIR"/resources "$TES3MP_HOME"/
-  fi
+    if [[ -f $TES3MP_HOME/tes3mp-client.cfg ]]; then
+        echo -e "Loading client config from the home directory"
+    elif [[ -f tes3mp-client-default.cfg ]]; then
+        echo -e "Loading client config from the package directory"
+    else
+        echo -e "Client config not found in home and package directory, trying to copy from .example"
+        cp -f "$GAMEDIR"/tes3mp-client-default.cfg.example "$TES3MP_HOME"/tes3mp-client.cfg
+    fi
 fi
 EOF
 
@@ -689,7 +715,7 @@ EOF
     WRAPPER="$BINARY"
     BINARY_RENAME="$BINARY.$PACKAGE_ARCH"
     mv "$BINARY" "$BINARY_RENAME"
-    printf "#!/bin/bash\n\nGAMEDIR=\"\$(dirname \$0)\"\ncd \"\$GAMEDIR\"\nif test -f ./tes3mp-prelaunch; then bash ./tes3mp-prelaunch; fi\nLD_LIBRARY_PATH=\"./lib\" ./$BINARY_RENAME \"\$@\"" > "$WRAPPER"
+    printf "#!/bin/bash\n\nWRAPPER=\"\$(basename \$0)\"\nGAMEDIR=\"\$(dirname \$0)\"\ncd \"\$GAMEDIR\"\nif test -f ./tes3mp-prelaunch; then bash ./tes3mp-prelaunch \"\$WRAPPER\"; fi\nLD_LIBRARY_PATH=\"./lib\" ./$BINARY_RENAME \"\$@\"" > "$WRAPPER"
   done
   chmod 755 *
 

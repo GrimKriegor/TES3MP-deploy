@@ -2,7 +2,7 @@
 
 set -e
 
-VERSION="2.6.0"
+VERSION="2.6.1"
 
 HELPTEXT="\
 TES3MP-deploy ($VERSION)
@@ -279,7 +279,7 @@ if [ $INSTALL ]; then
   if [ $BUILD_BULLET ] && ! [ -e "$DEPENDENCIES"/bullet ]; then git clone https://github.com/bulletphysics/bullet3.git "$DEPENDENCIES"/bullet; fi # cannot --depth 1 because we check out specific revision
   ! [ -e "$DEPENDENCIES"/raknet ] && git clone https://github.com/TES3MP/RakNet.git "$DEPENDENCIES"/raknet --depth 1
   ! [ -e "$DEPENDENCIES"/terra ] && if [ $BUILD_TERRA ]; then git clone https://github.com/zdevito/terra.git "$DEPENDENCIES"/terra --depth 1; else wget https://github.com/zdevito/terra/releases/download/release-2016-02-26/terra-Linux-x86_64-2fa8d0a.zip -O "$DEPENDENCIES"/terra.zip; fi
-  ! [ -e "$KEEPERS"/PluginExamples ] && git clone https://github.com/TES3MP/PluginExamples.git "$KEEPERS"/PluginExamples
+  ! [ -e "$KEEPERS"/CoreScripts ] && git clone https://github.com/TES3MP/CoreScripts.git "$KEEPERS"/CoreScripts
 
   #COPY STATIC SERVER AND CLIENT CONFIGS
   echo -e "\n>> Copying server and client configs to their permanent place"
@@ -287,7 +287,7 @@ if [ $INSTALL ]; then
 
   #SET home VARIABLE IN tes3mp-server-default.cfg
   echo -e "\n>> Autoconfiguring"
-  sed -i "s|home = .*|home = $KEEPERS/PluginExamples|g" "${KEEPERS}"/tes3mp-server-default.cfg
+  sed -i "s|home = .*|home = $KEEPERS/CoreScripts|g" "${KEEPERS}"/tes3mp-server-default.cfg
 
   #DIRTY HACKS
   echo -e "\n>> Applying some dirty hacks"
@@ -435,13 +435,13 @@ if [ $REBUILD ]; then
     if [[ "$TARGET_VERSION_STRING" == "" || "$TARGET_VERSION_STRING" == "latest" ]]; then
       echo -e "\nUsing the upstream version string"
       git stash
-      cd "$KEEPERS"/PluginExamples
+      cd "$KEEPERS"/CoreScripts
       git stash
       cd "$CODE"
     else
       echo -e "\nUsing \"$TARGET_VERSION_STRING\" as version string"
       sed -i "s|#define TES3MP_VERSION .*|#define TES3MP_VERSION \"$TARGET_VERSION_STRING\"|g" ./components/openmw-mp/Version.hpp
-      sed -i "s|    if tes3mp.GetServerVersion() ~= .*|    if tes3mp.GetServerVersion() ~= \"$TARGET_VERSION_STRING\" then|g" "$KEEPERS"/PluginExamples/scripts/server.lua
+      sed -i "s|    if tes3mp.GetServerVersion() ~= .*|    if tes3mp.GetServerVersion() ~= \"$TARGET_VERSION_STRING\" then|g" "$KEEPERS"/CoreScripts/scripts/server.lua
     fi
 
     cd "$BASE"
@@ -456,7 +456,7 @@ if [ $REBUILD ]; then
     git checkout master
     cd "$BASE"
 
-    cd "$KEEPERS"/PluginExamples
+    cd "$KEEPERS"/CoreScripts
     git stash
     git pull
     git checkout master
@@ -609,8 +609,8 @@ if [ $MAKE_PACKAGE ]; then
 
   #COPY USEFUL FILES
   echo -e "\nCopying useful files"
-  cp -r "$KEEPERS"/{PluginExamples,*.cfg} .
-  sed -i "s|home = .*|home = ./PluginExamples|g" "${PACKAGE_TMP}"/tes3mp-server-default.cfg
+  cp -r "$KEEPERS"/{CoreScripts,*.cfg} .
+  sed -i "s|home = .*|home = ./CoreScripts|g" "${PACKAGE_TMP}"/tes3mp-server-default.cfg
 
   #COPY WHATEVER EXTRA FILES ARE CURRENTLY PRESENT
   if [ -d "$EXTRA" ]; then
@@ -683,12 +683,12 @@ if [[ "$ARGS" = 'tes3mp-server' ]]; then
         LOADING_FROM_HOME=true
     fi
     if [[ $LOADING_FROM_HOME ]]; then
-        if [[ -d "$TES3MP_HOME"/PluginExamples ]]; then
-            echo -e "Loading PluginExamples folder from the home directory"
+        if [[ -d "$TES3MP_HOME"/CoreScripts ]]; then
+            echo -e "Loading CoreScripts folder from the home directory"
         else
-            echo -e "PluginExamples folder not found in home directory, copying from package directory"
-            cp -rf "$GAMEDIR"/PluginExamples/ "$TES3MP_HOME"/
-            sed -i "s|home = .*|home = $TES3MP_HOME/PluginExamples |g" "$TES3MP_HOME"/tes3mp-server.cfg
+            echo -e "CoreScripts folder not found in home directory, copying from package directory"
+            cp -rf "$GAMEDIR"/CoreScripts/ "$TES3MP_HOME"/
+            sed -i "s|home = .*|home = $TES3MP_HOME/CoreScripts |g" "$TES3MP_HOME"/tes3mp-server.cfg
         fi
         #if [[ -e "$TES3MP_HOME"/resources ]]; then
         #    echo -e "Loading resources folder from the home directory"

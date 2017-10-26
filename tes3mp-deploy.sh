@@ -27,6 +27,11 @@ Options:
   -e, --version-string		STRING Set the version string for compatibility
   -m, --build-master		Build the master server
 
+Peculiar options:
+  --debug-symbols		Build with debug symbols
+  --skip-pkgs			Skip package installation
+  --cmake-local			Tell CMake to look in /usr/local/ for libraries
+
 Please report bugs in the GitHub issue page or directly on the TES3MP Discord.
 https://github.com/GrimKriegor/TES3MP-deploy
 "
@@ -125,6 +130,16 @@ else
       touch .buildmaster
     ;;
 
+    #BUILD WITH DEBUG SYMBOLS
+    --debug-symbols )
+      DEBUG_SYMBOLS=true
+    ;;
+
+    #SKIP PACKAGE INSTALLATION
+    --skip-pkgs )
+      SKIP_PACKAGE_INSTALL=true
+    ;;
+
     #TELL CMAKE TO LOOK FOR DEPENDENCIES ON /USR/LOCAL/
     --cmake-local )
       CMAKE_LOCAL=true
@@ -186,6 +201,7 @@ if [ $INSTALL ]; then
   mkdir -p "$DEVELOPMENT" "$KEEPERS" "$DEPENDENCIES"
 
   #CHECK DISTRO AND INSTALL DEPENDENCIES
+  if [ ! $SKIP_PACKAGE_INSTALL ]; then
   echo -e "\n>> Checking which GNU/Linux distro is installed"
   case $DISTRO in
     "arch" | "parabola" | "manjarolinux" )
@@ -254,6 +270,7 @@ if [ $INSTALL ]; then
         read
     ;;
   esac
+  fi
 
   #CHECK IF GCC HAS C++14 SUPPORT, DISPLAY A MESSAGE AND ABORT OTHERWISE
   echo -e "\n>> Checking if the compiler has the necessary features"
@@ -533,6 +550,11 @@ if [ $REBUILD ]; then
   if [ $BUILD_MASTER ]; then
     CMAKE_PARAMS="$CMAKE_PARAMS \
       -DBUILD_MASTER=ON"
+  fi
+
+  if [ $DEBUG_SYMBOLS ]; then
+    CMAKE_PARAMS="$CMAKE_PARAMS \
+      -DCMAKE_BUILD_TYPE=Debug"
   fi
 
   if [ $CMAKE_LOCAL ]; then

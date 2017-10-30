@@ -213,10 +213,10 @@ if [ $INSTALL ]; then
         fi
 
         echo -e "\nCreating symlinks for ncurses compatibility"
-        LIBTINFO_VER=6
-        NCURSES_VER="$(pacman -Q ncurses | awk '{print $2}' | cut -c 1-3)"
-        sudo ln -sf /usr/lib/libncursesw.so."$NCURSES_VER" /usr/lib/libtinfo.so."$LIBTINFO_VER"
-        sudo ln -sf /usr/lib/libtinfo.so."$LIBTINFO_VER" /usr/lib/libtinfo.so
+        #LIBTINFO_VER=6
+        #NCURSES_VER="$(pacman -Q ncurses | awk '{print $2}' | cut -c 1-3)"
+        #sudo ln -sf /usr/lib/libncursesw.so."$NCURSES_VER" /usr/lib/libtinfo.so."$LIBTINFO_VER"
+        #sudo ln -sf /usr/lib/libtinfo.so."$LIBTINFO_VER" /usr/lib/libtinfo.so
     ;;
 
     "debian" | "devuan" )

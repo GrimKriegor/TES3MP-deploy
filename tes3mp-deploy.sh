@@ -4,6 +4,8 @@ set -e
 
 VERSION="2.6.2"
 
+TES3MP_STABLE_VERSION="0.6.1"
+
 HELPTEXT="\
 TES3MP-deploy ($VERSION)
 Grim Kriegor <grimkriegor@krutt.org>
@@ -380,6 +382,20 @@ if [ $INSTALL ]; then
 
   cd "$BASE"
 
+  #BUILD THE STABLE BRANCH IF NO TARGET COMMIT IS SPECIFIED
+  if [ ! $BUILD_COMMIT ]; then
+    echo -e "\n>> Switching to the STABLE branch."
+    BUILD_COMMIT=true
+    TARGET_COMMIT="stable"
+
+    #SWITCH TO THE STABLE BRANCH ON CORESCRIPTS AS WELL
+    cd "$KEEPERS"/CoreScripts
+    git stash
+    git pull
+    git checkout "$TES3MP_STABLE_VERSION"
+    cd "$BASE"
+  fi
+
 fi
 
 #CHECK THE REMOTE REPOSITORY FOR CHANGES
@@ -431,11 +447,16 @@ if [ $REBUILD ]; then
   #SWITCH TO A SPECIFIC COMMIT
   if [ $BUILD_COMMIT ]; then
     cd "$CODE"
-    if [ "$TARGET_COMMIT" == "latest" ]; then
+    if [[ "$TARGET_COMMIT" == "" || "$TARGET_COMMIT" == "latest" ]]; then
       echo -e "\nChecking out the latest commit."
       git stash
       git pull
       git checkout master
+    elif [ "$TARGET_COMMIT" == "stable" ]; then
+      echo -e "\nChecking out the stable branch. \"$TES3MP_STABLE_VERSION\""
+      git stash
+      git pull
+      git checkout "$TES3MP_STABLE_VERSION"
     else
       echo -e "\nChecking out $TARGET_COMMIT"
       git stash

@@ -513,6 +513,7 @@ if [ $REBUILD ]; then
       -DBUILD_OPENCS=OFF \
       -DCMAKE_CXX_STANDARD=14 \
       -DCMAKE_CXX_FLAGS=\"-std=c++14\" \
+      -DDESIRED_QT_VERSION=5 \
       -DCallFF_INCLUDES="${CALLFF_LOCATION}"/include \
       -DCallFF_LIBRARY="${CALLFF_LOCATION}"/build/src/libcallff.a \
       -DRakNet_INCLUDES="${RAKNET_LOCATION}"/include \

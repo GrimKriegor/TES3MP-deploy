@@ -2,7 +2,7 @@
 
 set -e
 
-VERSION="2.7.0"
+VERSION="2.7.1"
 
 TES3MP_STABLE_VERSION="0.6.2"
 

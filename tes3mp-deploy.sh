@@ -195,6 +195,11 @@ if [ -f "$BASE"/.buildmaster ]; then
   BUILD_MASTER=true
 fi
 
+if [ $CMAKE_LOCAL ]; then
+  export PATH=/usr/local/bin:$PATH
+  export LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:"$LD_LIBRARY_PATH"
+fi
+
 #INSTALL MODE
 if [ $INSTALL ]; then
 

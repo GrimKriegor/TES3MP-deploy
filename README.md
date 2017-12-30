@@ -14,7 +14,7 @@ Config files and plugins are kept in a separate folder, avoiding their deletion 
 
 **Currently supported systems:** Arch Linux, Parabola GNU/Linux-libre, Manjaro, Debian, Devuan, Ubuntu, Linux Mint and Fedora.
 
-Can be used in conjunction with [TES3MP-packager](https://github.com/GrimKriegor/TES3MP-packager) to quickly create distributable packages that support a wide range of GNU/Linux distros.
+Can be used in conjunction with [TES3MP-forge](https://github.com/GrimKriegor/TES3MP-forge) to quickly create distributable packages that support a wide range of GNU/Linux distros.
 
 Big thanks to Testman, Shnatsel, Shatur and the TES3MP community for their intense testing, debugging contributions and suggestions.
 

@@ -6,11 +6,13 @@ VERSION="2.9.0"
 
 TES3MP_STABLE_VERSION="0.6.2"
 
-HELPTEXT="\
+HEADERTEXT="\
 TES3MP-deploy ($VERSION)
 Grim Kriegor <grimkriegor@krutt.org>
 Licensed under the GNU GPLv3 free license
+"
 
+HELPTEXT="\
 Usage $0 MODE [OPTIONS]
 
 Modes of operation:
@@ -38,6 +40,8 @@ Peculiar options:
 Please report bugs in the GitHub issue page or directly on the TES3MP Discord.
 https://github.com/GrimKriegor/TES3MP-deploy
 "
+
+echo -e "$HEADERTEXT"
 
 #PARSE ARGUMENTS
 SCRIPT_ARGS="$@"

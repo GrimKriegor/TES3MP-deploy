@@ -215,6 +215,7 @@ if [ $SCRIPT_UPGRADE ]; then
 
   if [ -d "$SCRIPT_BASE"/.git ]; then
     echo -e "\n>>Upgrading the TES3MP-deploy git repository"
+    git --git-dir="$SCRIPT_BASE"/.git stash
     git --git-dir="$SCRIPT_BASE"/.git pull
   else
     echo -e "\n>>Downloading TES3MP-deploy from GitHub"

@@ -600,7 +600,6 @@ if [ $REBUILD ]; then
     cd "$CODE"
     git stash
     git pull
-    git checkout master
     cd "$BASE"
   fi
 

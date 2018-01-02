@@ -33,6 +33,7 @@ Peculiar options:
   --debug-symbols		Build with debug symbols
   --skip-pkgs			Skip package installation
   --cmake-local			Tell CMake to look in /usr/local/ for libraries
+  --handle-corescripts		Handle CoreScripts, pulls and branch switches
 
 Please report bugs in the GitHub issue page or directly on the TES3MP Discord.
 https://github.com/GrimKriegor/TES3MP-deploy
@@ -146,6 +147,11 @@ else
     #TELL CMAKE TO LOOK FOR DEPENDENCIES ON /USR/LOCAL/
     --cmake-local )
       CMAKE_LOCAL=true
+    ;;
+
+    #HANDLE CORESCRIPTS
+    --handle-corescripts )
+      HANDLE_CORESCRIPTS=true
     ;;
 
     esac
@@ -454,10 +460,26 @@ if [ $UPGRADE ]; then
   fi
   cd "$BASE"
 
+  #CHECK IF THERE ARE CHANGES IN THE CORESCRIPTS GIT REMOTE
+  if [ $HANDLE_CORESCRIPTS ]; then
+    echo -e "\n>> Checking the CoreScripts git repository for changes"
+    cd "$KEEPERS"/CoreScripts
+    git remote update
+    if [ "$(git rev-parse @)" != "$(git rev-parse @{u})" ]; then
+      echo -e "\nNEW CHANGES on the CoreScripts git repository"
+      GIT_CHANGES_CORESCRIPTS=true
+    else
+      echo -e "\nNo changes on the CoreScripts git repository"
+    fi
+    cd "$BASE"
+  fi
+
   #AUTOMATICALLY UPGRADE IF THERE ARE GIT CHANGES
   if [ $AUTO_UPGRADE ]; then
     if [ $GIT_CHANGES ]; then
       REBUILD="YES"
+      UPGRADE="YES"
+    elif [ $GIT_CHANGES_CORESCRIPTS ]; then
       UPGRADE="YES"
     else
       echo -e "\nNo new commits, exiting."
@@ -469,7 +491,48 @@ if [ $UPGRADE ]; then
     if [ "$REBUILD_PROMPT" == "YES" ]; then
       REBUILD="YES"
       UPGRADE="YES"
+    else
+      if [ $HANDLE_CORESCRIPTS ]; then
+	echo -e "\nUpgrade CoreScripts at least? (type YES to upgrade)"
+	read CORESCRIPTS_UPGRADE_PROMPT
+	if [ "$CORESCRIPTS_UPGRADE_PROMPT" == "YES" ]; then
+	  UPGRADE="YES"
+	fi
+      fi
     fi
+  fi
+
+fi
+
+#CORESCRIPTS HANDLING (Hack, please make me more elegant later :( )
+if [ $HANDLE_CORESCRIPTS ]; then
+  if [ $UPGRADE ]; then
+    echo -e "\n>> Pulling CoreScripts code changes from git"
+    cd "$KEEPERS"/CoreScripts
+    git stash
+    git pull
+    cd "$BASE"
+  fi
+
+  if [ $BUILD_COMMIT ]; then
+    cd "$KEEPERS"/CoreScripts
+    if [[ "$TARGET_COMMIT" == "" || "$TARGET_COMMIT" == "latest" ]]; then
+      echo -e "\nChecking out the latest CoreScripts commit."
+      git stash
+      git pull
+      git checkout master
+    elif [ "$TARGET_COMMIT" == "stable" ]; then
+      echo -e "\nChecking out the CoreScripts stable branch. \"$TES3MP_STABLE_VERSION\""
+      git stash
+      git pull
+      git checkout "$TES3MP_STABLE_VERSION"
+    else
+      echo -e "\nChecking out CoreScripts $TARGET_COMMIT"
+      git stash
+      git pull
+      git checkout "$TARGET_COMMIT"
+    fi
+    cd "$BASE"
   fi
 
 fi
@@ -530,12 +593,6 @@ if [ $REBUILD ]; then
   if [ "$UPGRADE" == "YES" ]; then
     echo -e "\n>> Pulling code changes from git"
     cd "$CODE"
-    git stash
-    git pull
-    git checkout master
-    cd "$BASE"
-
-    cd "$KEEPERS"/CoreScripts
     git stash
     git pull
     git checkout master

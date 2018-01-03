@@ -279,25 +279,12 @@ if [ $INSTALL ]; then
         if [ ! -d "/usr/share/licenses/gcc-libs-multilib/" ]; then
               sudo pacman -S --needed gcc-libs
         fi
-
-        #echo -e "\nCreating symlinks for ncurses compatibility"
-        #LIBTINFO_VER=6
-        #NCURSES_VER="$(pacman -Q ncurses | awk '{print $2}' | cut -c 1-3)"
-        #sudo ln -sf /usr/lib/libncursesw.so."$NCURSES_VER" /usr/lib/libtinfo.so."$LIBTINFO_VER"
-        #sudo ln -sf /usr/lib/libtinfo.so."$LIBTINFO_VER" /usr/lib/libtinfo.so
     ;;
 
     "debian" | "devuan" )
         echo -e "You seem to be running Debian or Devuan"
         sudo apt-get update
         sudo apt-get install unzip wget git cmake libopenal-dev qt5-default libqt5opengl5-dev libopenthreads-dev libopenscenegraph-3.4-dev libsdl2-dev libqt4-dev libboost-filesystem-dev libboost-thread-dev libboost-program-options-dev libboost-system-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libswresample-dev libmygui-dev libunshield-dev cmake build-essential libqt4-opengl-dev g++ libncurses5-dev #libbullet-dev
-        #echo -e "\nDebian users are required to build OpenSceneGraph from source\nhttps://wiki.openmw.org/index.php?title=Development_Environment_Setup#Build_and_install_OSG\n\nType YES if you want the script to do it automatically (THIS IS BROKEN ATM)\nIf you already have it installed or want to do it manually,\npress ENTER to continue"
-        #read INPUT
-        #if [ "$INPUT" == "YES" ]; then
-        #      echo -e "\nOpenSceneGraph will be built from source"
-        #      BUILD_OSG=true
-        #      sudo apt-get build-dep openscenegraph libopenscenegraph-dev
-        #fi
         sudo sed -i "s,# deb-src,deb-src,g" /etc/apt/sources.list
         sudo apt-get build-dep bullet
         BUILD_BULLET=true
@@ -377,8 +364,6 @@ if [ $INSTALL ]; then
   #DIRTY HACKS
   echo -e "\n>> Applying some dirty hacks"
   sed -i "s|tes3mp.lua,chat_parser.lua|server.lua|g" "${KEEPERS}"/tes3mp-server-default.cfg #Fixes server scripts
-  #sed -i "s|Y #key for switch chat mode enabled/hidden/disabled|Right Alt|g" "${KEEPERS}"/tes3mp-client-default.cfg #Changes the chat key
-  #sed -i "s|mp.tes3mp.com|grimkriegor.zalkeen.us|g" "${KEEPERS}"/tes3mp-client-default.cfg #Sets Grim's server as the default
 
   #BUILD CALLFF
   echo -e "\n>> Building CallFF"
@@ -823,18 +808,6 @@ if [ $MAKE_PACKAGE ]; then
     ln -sf ./"$LINK_TARGET_BASENAME" ./lib/"$LINK_BASENAME"
     echo -ne "$LINK\033[0K\r"
   done
-
-  #for BINARY in "${PACKAGE_BINARIES[@]}"; do
-    #join <(ldd "$BINARY" | awk '{if(substr($3,0,1)=="/") print $1,$3}') <(patchelf --print-needed "$BINARY" ) | cut -d\  -f2 | \
-    #xargs -d '\n' -I{} cp --copy-contents {} ./lib
-  #done
-
-  #PATCH LIBRARY PATHS ON THE EXECUTABLES
-  #echo -e "\nPatching binary library paths"
-  #for BINARY in "${PACKAGE_BINARIES[@]}"; do
-  #  echo -e "Patching: $BINARY"
-  #  patchelf --set-rpath "./lib" "$PACKAGE_TMP"/"$BINARY"
-  #done
 
   #PACKAGE INFO
   PACKAGE_ARCH=$(uname -m)

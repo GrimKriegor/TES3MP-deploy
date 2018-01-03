@@ -253,7 +253,7 @@ if [ $SCRIPT_UPGRADE ]; then
     echo -e "\nScript upgraded from ($SCRIPT_OLD_VERSION) to ($SCRIPT_NEW_VERSION)"
     echo -e "\nReloading...\n"
     SCRIPT_ARGS_TRUNC="$(echo "$SCRIPT_ARGS" | sed 's/--script-upgrade//g;s/-y//g')"
-    eval "$0 $SCRIPT_ARGS_TRUNC"
+    eval $(which bash) "$0 $SCRIPT_ARGS_TRUNC"
     exit 0
   else
     echo -e "\nScript already at the latest avaliable version ($SCRIPT_OLD_VERSION)"

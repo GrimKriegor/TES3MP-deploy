@@ -774,7 +774,14 @@ if [ $MAKE_PACKAGE ]; then
     exit 1
   fi
 
+  #COPY THE ENTIRE BUILD FOLDER FOR PACKAGING
   cp -r "$DEVELOPMENT" "$PACKAGE_TMP"
+
+  #COPY THE PERSISTENT VERSION FILE AS WELL
+  if [ $HANDLE_VERSION_FILE ]; then
+    cp -f "$KEEPERS"/version "$PACKAGE_TMP"/resources/version
+  fi
+
   cd "$PACKAGE_TMP"
 
   #CLEANUP UNNEEDED FILES

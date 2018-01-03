@@ -5,6 +5,7 @@ set -e
 VERSION="2.9.1"
 
 TES3MP_STABLE_VERSION="0.6.2"
+TES3MP_STABLE_VERSION_FILE="0.43.0\n5fd9079b26a60d3a8a52299d0ea8146b85323339"
 
 HEADERTEXT="\
 TES3MP-deploy ($VERSION)
@@ -27,7 +28,7 @@ Modes of operation:
 Options:
   -s, --server-only		Only build the server
   -c, --cores N			Use N cores for building TES3MP and its dependencies
-  -v, --version	ID		Checkout and build a specific TES3MP commit or branch
+  -v, --version ID		Checkout and build a specific TES3MP commit or branch
   -V, --version-string STRING	Set the version string for compatibility
   -m, --build-master		Build the master server
 
@@ -36,6 +37,7 @@ Peculiar options:
   --skip-pkgs			Skip package installation
   --cmake-local			Tell CMake to look in /usr/local/ for libraries
   --handle-corescripts		Handle CoreScripts, pulls and branch switches
+  --handle-version-file		Handle version file by overwritting it with a persistent one
 
 Please report bugs in the GitHub issue page or directly on the TES3MP Discord.
 https://github.com/GrimKriegor/TES3MP-deploy
@@ -158,6 +160,11 @@ else
       HANDLE_CORESCRIPTS=true
     ;;
 
+    #HANDLE VERSION FILE
+    --handle-version-file )
+      HANDLE_VERSION_FILE=true
+    ;;
+
     esac
     shift
   done
@@ -205,6 +212,11 @@ fi
 #CHECK IF MASTER SERVER IS SUPPOSED TO BE BUILT
 if [ -f "$BASE"/.buildmaster ]; then
   BUILD_MASTER=true
+fi
+
+#CHECK IF THERE IS A PERSISTENT VERSION FILE
+if [ -f "$KEEPERS"/version ]; then
+  HANDLE_VERSION_FILE=true
 fi
 
 if [ $CMAKE_LOCAL ]; then
@@ -448,6 +460,9 @@ if [ $INSTALL ]; then
     git pull
     git checkout "$TES3MP_STABLE_VERSION"
     cd "$BASE"
+
+    #HANDLE VERSION FILE
+    HANDLE_VERSION_FILE=true
   fi
 
 fi
@@ -568,6 +583,10 @@ if [ $REBUILD ]; then
       git stash
       git pull
       git checkout "$TES3MP_STABLE_VERSION"
+      if [ $HANDLE_VERSION_FILE ]; then
+	echo -e "\n>> Creating persistent version file"
+	echo -e $TES3MP_STABLE_VERSION_FILE > "$KEEPERS"/version
+      fi
     else
       echo -e "\nChecking out $TARGET_COMMIT"
       git stash
@@ -575,6 +594,11 @@ if [ $REBUILD ]; then
       git checkout "$TARGET_COMMIT"
     fi
     cd "$BASE"
+
+    if [ $HANDLE_VERSION_FILE ]; then
+      echo -e "\n(!) VERSION FILE OVERRIDE DETECTED (!)\nIf this was not intended, remove $KEEPERS/version"
+    fi
+
   fi
 
   #CHANGE VERSION STRING
@@ -722,6 +746,13 @@ if [ $REBUILD ]; then
     printf "#!/bin/bash\n\ncd build/\n./$i\ncd .." > "$i".sh
     chmod +x "$i".sh
   done
+
+  #HANDLE VERSION FILE
+  if [ $HANDLE_VERSION_FILE ]; then
+    echo -e "\n>> Linking persistent version file"
+    rm "$DEVELOPMENT"/resources/version
+    ln -sf "$KEEPERS"/version "$DEVELOPMENT"/resources/version
+  fi
 
   #ALL DONE
   echo -e "\n\n\nAll done! Press any key to exit.\nMay Vehk bestow his blessing upon your Muatra."

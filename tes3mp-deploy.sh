@@ -27,8 +27,8 @@ Modes of operation:
 Options:
   -s, --server-only		Only build the server
   -c, --cores N			Use N cores for building TES3MP and its dependencies
-  -v, --commit			HASH Checkout and build a specific TES3MP commit
-  -e, --version-string		STRING Set the version string for compatibility
+  -v, --version	ID		Checkout and build a specific TES3MP commit or branch
+  -V, --version-string STRING	Set the version string for compatibility
   -m, --build-master		Build the master server
 
 Peculiar options:
@@ -99,9 +99,9 @@ else
     ;;
 
     #BUILD SPECIFIC COMMIT
-    -v | --commit )
+    -v | --version | --branch | --commit )
       if [[ "$2" =~ ^-.* || "$2" == "" ]]; then
-        echo -e "\nYou must specify a valid commit hash"
+        echo -e "\nYou must specify a valid commit hash or branch name"
         exit 1
       else
         BUILD_COMMIT=true
@@ -111,7 +111,7 @@ else
     ;;
 
     #CUSTOM VERSION STRING FOR COMPATIBILITY
-    -e | --version-string )
+    -V | --version-string )
       if [[ "$2" =~ ^-.* || "$2" == "" ]]; then
         echo -e "\nYou must specify a valid version string"
         exit 1

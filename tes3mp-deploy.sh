@@ -764,7 +764,7 @@ if [ $MAKE_PACKAGE ]; then
 
   #COPY THE PERSISTENT VERSION FILE AS WELL
   if [ $HANDLE_VERSION_FILE ]; then
-    cp -f "$KEEPERS"/version "$PACKAGE_TMP"/resources/version | true
+    cp -fn "$KEEPERS"/version "$PACKAGE_TMP"/resources/version
   fi
 
   cd "$PACKAGE_TMP"

@@ -266,7 +266,7 @@ if [ $INSTALL ]; then
 
   #CREATE FOLDER HIERARCHY
   echo -e ">> Creating folder hierarchy"
-  mkdir -p "$DEVELOPMENT" "$KEEPERS" "$DEPENDENCIES" "$EXTRA"
+  mkdir -p "$DEVELOPMENT" "$KEEPERS" "$DEPENDENCIES"
 
   #CHECK DISTRO AND INSTALL DEPENDENCIES
   if [ ! $SKIP_PACKAGE_INSTALL ]; then

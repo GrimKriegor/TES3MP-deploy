@@ -633,7 +633,8 @@ if [ $REBUILD ]; then
       -DRakNet_LIBRARY_DEBUG="${RAKNET_LOCATION}"/build/lib/libRakNetLibStatic.a \
       -DRakNet_LIBRARY_RELEASE="${RAKNET_LOCATION}"/build/lib/libRakNetLibStatic.a \
       -DTerra_INCLUDES="${TERRA_LOCATION}"/include \
-      -DTerra_LIBRARY_RELEASE="${TERRA_LOCATION}"/lib/libterra.a"
+      -DTerra_LIBRARY_RELEASE="${TERRA_LOCATION}"/lib/libterra.a \
+      -DSol2_INCLUDE_DIR="${CODE}"/extern/sol"
 
   if [ $BUILD_OSG ]; then
     CMAKE_PARAMS="$CMAKE_PARAMS \

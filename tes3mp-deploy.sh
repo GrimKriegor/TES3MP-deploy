@@ -2,7 +2,7 @@
 
 set -e
 
-VERSION="2.10.1"
+VERSION="2.10.2"
 
 TES3MP_STABLE_VERSION="0.6.2"
 TES3MP_STABLE_VERSION_FILE="0.43.0\n5fd9079b26a60d3a8a52299d0ea8146b85323339"
@@ -266,7 +266,7 @@ if [ $INSTALL ]; then
 
   #CREATE FOLDER HIERARCHY
   echo -e ">> Creating folder hierarchy"
-  mkdir -p "$DEVELOPMENT" "$KEEPERS" "$DEPENDENCIES" "$EXTRA"
+  mkdir -p "$DEVELOPMENT" "$KEEPERS" "$DEPENDENCIES"
 
   #CHECK DISTRO AND INSTALL DEPENDENCIES
   if [ ! $SKIP_PACKAGE_INSTALL ]; then
@@ -764,7 +764,8 @@ if [ $MAKE_PACKAGE ]; then
 
   #COPY THE PERSISTENT VERSION FILE AS WELL
   if [ $HANDLE_VERSION_FILE ]; then
-    cp -f "$KEEPERS"/version "$PACKAGE_TMP"/resources/version
+    rm -f "$PACKAGE_TMP"/resources/version
+    cp -fn "$KEEPERS"/version "$PACKAGE_TMP"/resources/version
   fi
 
   cd "$PACKAGE_TMP"
@@ -786,7 +787,7 @@ if [ $MAKE_PACKAGE ]; then
   #COPY WHATEVER EXTRA FILES ARE CURRENTLY PRESENT
   if [ -d "$EXTRA" ]; then
     echo -e "\nCopying some extra files"
-    cp -r --preserve=links "$EXTRA"/* "$PACKAGE_TMP"/
+    cp -rfn --preserve=links "$EXTRA"/* "$PACKAGE_TMP"/
   fi
 
   #LIST AND COPY ALL LIBS

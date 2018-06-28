@@ -406,6 +406,13 @@ if [ $INSTALL ]; then
   echo -e "\n>> Building RakNet"
   mkdir -p "$DEPENDENCIES"/raknet/build
   cd "$DEPENDENCIES"/raknet/build
+
+  # Compatibility hack for 0.6.2, please remove once stable becomes 0.6.3
+  if [[ "$TARGET_COMMIT" == "stable" || "$TARGET_COMMIT" == "" ]]; then
+    git fetch --unshallow | true
+    git checkout 1d6bb9e88db04aaeaa8752835c17574509d05a31
+  fi
+
   rm -f CMakeCache.txt
   cmake -DCMAKE_BUILD_TYPE=Release -DRAKNET_ENABLE_DLL=OFF -DRAKNET_ENABLE_SAMPLES=OFF -DRAKNET_ENABLE_STATIC=ON -DRAKNET_GENERATE_INCLUDE_ONLY_DIR=ON ..
   make -j$CORES

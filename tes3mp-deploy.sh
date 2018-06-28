@@ -408,7 +408,7 @@ if [ $INSTALL ]; then
   cd "$DEPENDENCIES"/raknet/build
 
   # Compatibility hack for 0.6.2, please remove once stable becomes 0.6.3
-  if [[ "$TARGET_COMMIT" == "stable" || "$TARGET_COMMIT" == "" ]]; then
+  if [[ "$TARGET_COMMIT" == "0.6.2" || "$TARGET_COMMIT" == "stable" || "$TARGET_COMMIT" == "" ]]; then
     git fetch --unshallow | true
     git checkout 1d6bb9e88db04aaeaa8752835c17574509d05a31
   fi
@@ -759,7 +759,7 @@ if [ $MAKE_PACKAGE ]; then
   LIBRARIES_OPENMW=("libavcodec.so" "libavformat.so" "libavutil.so" "libboost_filesystem.so" "libboost_program_options.so" "libboost_system.so" "libboost_thread.so" "libBulletCollision.so" "libbz2.so" "libLinearMath.so" "libMyGUIEngine.so" "libopenal.so" "libOpenThreads.so" "libosgAnimation.so" "libosgDB.so" "libosgFX.so" "libosgGA.so" "libosgParticle.so" "libosg.so" "libosgText.so" "libosgUtil.so" "libosgViewer.so" "libosgWidget.so" "libSDL2" "libswresample.so" "libswscale.so" "libts.so" "libtxc_dxtn.so" "libunshield.so" "libuuid.so" "osgPlugins") #"libfreetype.so"
   LIBRARIES_TES3MP=("libcallff.a" "libRakNetLibStatic.a" "libterra.a" "libtinfo.so")
   LIBRARIES_EXTRA=("libpng16.so" "libpng12.so") #"libstdc++.so.6"
-  LIBRARIES_SERVER=("libboost_system.so", "libboost_filesystem.so", "libboost_program_options.so")
+  LIBRARIES_SERVER=("libboost_system.so" "libboost_filesystem.so" "libboost_program_options.so")
 
   #EXIT IF TES3MP hasn't been compiled yet
   if [[ ! -f "$DEVELOPMENT"/tes3mp && ! -f "$DEVELOPMENT"/tes3mp-server ]]; then

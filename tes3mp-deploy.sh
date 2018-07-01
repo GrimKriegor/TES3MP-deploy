@@ -316,7 +316,7 @@ if [ $INSTALL ]; then
               echo -e "Done!"
         fi
         sudo dnf --refresh groupinstall development-tools
-        sudo dnf --refresh install unzip wget cmake openal-devel OpenSceneGraph-qt-devel SDL2-devel qt5-devel boost-filesystem git boost-thread boost-program-options boost-system ffmpeg-devel ffmpeg-libs bullet-devel gcc-c++ mygui-devel unshield-devel tinyxml-devel cmake ncurses-c++-libs ncurses-devel #llvm35 llvm clang ncurses
+        sudo dnf --refresh install unzip wget cmake openal-devel OpenSceneGraph-qt-devel SDL2-devel qt5-devel boost-filesystem git boost-thread boost-program-options boost-system ffmpeg-devel ffmpeg-libs bullet-devel gcc-c++ mygui-devel unshield-devel tinyxml-devel cmake ncurses-c++-libs ncurses-devel luajit-devel #llvm35 llvm clang ncurses
         BUILD_BULLET=true
     ;;
 

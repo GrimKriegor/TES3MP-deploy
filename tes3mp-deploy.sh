@@ -31,6 +31,7 @@ Options:
   -v, --version ID		Checkout and build a specific TES3MP commit or branch
   -V, --version-string STRING	Set the version string for compatibility
   -m, --build-master		Build the master server
+  -C, --container		Run inside a container, for increasced compatibility
 
 Peculiar options:
   --debug-symbols		Build with debug symbols
@@ -44,6 +45,28 @@ https://github.com/GrimKriegor/TES3MP-deploy
 "
 
 echo -e "$HEADERTEXT"
+
+
+#RUN IN CONTAINER
+function run_in_container() {
+
+  #CHECK IF DOCKER IS INSTALLED
+  if ! which docker 2>&1 >/dev/null; then
+    echo -e "Please install Docker before proceeding."
+    exit 1
+  fi
+
+  #CLEAN ARGUMENTS
+  ARGUMENTS=$(echo "$@" | sed 's/-C//;s/--container//')
+
+  #NOTIFY
+  echo -e "\n[!] Now running inside the TES4MP-forge container [!]\n\n"
+
+  #RUN THROUGH TES3MP-FORGE
+  eval $(which docker) run --name tes3mp-deploy --rm -it -v "$PWD/tes3mp-deploy.sh":"/deploy/tes3mp-deploy.sh" -v "$PWD/container":"/build" --entrypoint "/bin/bash" grimkriegor/tes3mp-forge /deploy/tes3mp-deploy.sh --skip-pkgs "$ARGUMENTS"
+
+  exit 0
+}
 
 #PARSE ARGUMENTS
 SCRIPT_ARGS="$@"
@@ -138,6 +161,11 @@ else
     -m | --build-master )
       BUILD_MASTER=true
       touch .buildmaster
+    ;;
+
+    #RUN IN CONTAINER
+    -C | --container )
+    run_in_container "$@"
     ;;
 
     #BUILD WITH DEBUG SYMBOLS

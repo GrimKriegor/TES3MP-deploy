@@ -60,7 +60,7 @@ function run_in_container() {
   ARGUMENTS=$(echo "$@" | sed 's/-C//;s/--container//')
 
   #NOTIFY
-  echo -e "\n[!] Now running inside the TES4MP-forge container [!]\n\n"
+  echo -e "\n[!] Now running inside the TES3MP-forge container [!]\n\n"
 
   #RUN THROUGH TES3MP-FORGE
   eval $(which docker) run --name tes3mp-deploy --rm -it -v "$PWD/tes3mp-deploy.sh":"/deploy/tes3mp-deploy.sh" -v "$PWD/container":"/build" --entrypoint "/bin/bash" grimkriegor/tes3mp-forge /deploy/tes3mp-deploy.sh --skip-pkgs --cmake-local "$ARGUMENTS"

@@ -167,7 +167,7 @@ else
 
     #RUN IN CONTAINER
     -C | --container )
-    run_in_container "$@"
+    run_in_container "$SCRIPT_ARGS"
     ;;
 
     #BUILD WITH DEBUG SYMBOLS

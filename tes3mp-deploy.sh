@@ -764,9 +764,9 @@ if [ $MAKE_PACKAGE ]; then
 
   PACKAGE_BINARIES=("tes3mp" "tes3mp-browser" "tes3mp-server" "openmw-launcher" "openmw-wizard" "openmw-essimporter" "openmw-iniimporter" "bsatool" "esmtool")
   LIBRARIES_OPENMW=("libavcodec.so" "libavformat.so" "libavutil.so" "libboost_filesystem.so" "libboost_program_options.so" "libboost_system.so" "libboost_thread.so" "libBulletCollision.so" "libbz2.so" "libLinearMath.so" "libMyGUIEngine.so" "libopenal.so" "libOpenThreads.so" "libosgAnimation.so" "libosgDB.so" "libosgFX.so" "libosgGA.so" "libosgParticle.so" "libosg.so" "libosgText.so" "libosgUtil.so" "libosgViewer.so" "libosgWidget.so" "libSDL2" "libswresample.so" "libswscale.so" "libts.so" "libtxc_dxtn.so" "libunshield.so" "libuuid.so" "osgPlugins") #"libfreetype.so"
-  LIBRARIES_TES3MP=("libcallff.a" "libRakNetLibStatic.a" "libtinfo.so")
+  LIBRARIES_TES3MP=("libcallff.a" "libRakNetLibStatic.a" "libtinfo.so" "liblua5.1.so")
   LIBRARIES_EXTRA=("libpng16.so" "libpng12.so") #"libstdc++.so.6"
-  LIBRARIES_SERVER=("libboost_system.so" "libboost_filesystem.so" "libboost_program_options.so")
+  LIBRARIES_SERVER=("libboost_system.so" "libboost_filesystem.so" "libboost_program_options.so" "liblua5.1.so")
 
   #EXIT IF TES3MP hasn't been compiled yet
   if [[ ! -f "$DEVELOPMENT"/tes3mp && ! -f "$DEVELOPMENT"/tes3mp-server ]]; then

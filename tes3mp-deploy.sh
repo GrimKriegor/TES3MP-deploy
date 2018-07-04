@@ -230,7 +230,6 @@ EXTRA="$BASE/extra"
 #DEPENDENCY LOCATIONS
 CALLFF_LOCATION="$DEPENDENCIES"/callff
 RAKNET_LOCATION="$DEPENDENCIES"/raknet
-TERRA_LOCATION="$DEPENDENCIES"/terra
 OSG_LOCATION="$DEPENDENCIES"/osg
 BULLET_LOCATION="$DEPENDENCIES"/bullet
 
@@ -380,7 +379,6 @@ if [ $INSTALL ]; then
   if [ $BUILD_OSG ] && ! [ -e "$DEPENDENCIES"/osg ] ; then git clone https://github.com/openscenegraph/OpenSceneGraph.git "$DEPENDENCIES"/osg --depth 1; fi
   if [ $BUILD_BULLET ] && ! [ -e "$DEPENDENCIES"/bullet ]; then git clone https://github.com/bulletphysics/bullet3.git "$DEPENDENCIES"/bullet; fi # cannot --depth 1 because we check out specific revision
   ! [ -e "$DEPENDENCIES"/raknet ] && git clone https://github.com/TES3MP/RakNet.git "$DEPENDENCIES"/raknet --depth 1
-  ! [ -e "$DEPENDENCIES"/terra ] && if [ $BUILD_TERRA ]; then git clone https://github.com/zdevito/terra.git "$DEPENDENCIES"/terra --depth 1; else wget https://github.com/zdevito/terra/releases/download/release-2016-02-26/terra-Linux-x86_64-2fa8d0a.zip -O "$DEPENDENCIES"/terra.zip; fi
   ! [ -e "$KEEPERS"/CoreScripts ] && git clone https://github.com/TES3MP/CoreScripts.git "$KEEPERS"/CoreScripts
 
   #COPY STATIC SERVER AND CLIENT CONFIGS
@@ -448,25 +446,6 @@ if [ $INSTALL ]; then
   make -j$CORES
 
   ln -sf "$DEPENDENCIES"/raknet/include/RakNet "$DEPENDENCIES"/raknet/include/raknet #Stop being so case sensitive
-
-  cd "$BASE"
-
-  #BUILD TERRA
-  if [ $BUILD_TERRA ]; then
-      echo -e "\n>> Building Terra"
-      cd "$DEPENDENCIES"/terra/
-      make -j$CORES
-
-  else
-    if ! [ -e "$DEPENDENCIES"/terra ]; then
-      echo -e "\n>> Unpacking and preparing Terra"
-      cd "$DEPENDENCIES"
-      unzip -o terra.zip
-      rm -rf ./terra
-      mv --no-target-directory terra-* terra
-      rm terra.zip
-    fi
-  fi
 
   cd "$BASE"
 
@@ -668,9 +647,7 @@ if [ $REBUILD ]; then
       -DCallFF_LIBRARY="${CALLFF_LOCATION}"/build/src/libcallff.a \
       -DRakNet_INCLUDES="${RAKNET_LOCATION}"/include \
       -DRakNet_LIBRARY_DEBUG="${RAKNET_LOCATION}"/build/lib/libRakNetLibStatic.a \
-      -DRakNet_LIBRARY_RELEASE="${RAKNET_LOCATION}"/build/lib/libRakNetLibStatic.a \
-      -DTerra_INCLUDES="${TERRA_LOCATION}"/include \
-      -DTerra_LIBRARY_RELEASE="${TERRA_LOCATION}"/lib/libterra.a"
+      -DRakNet_LIBRARY_RELEASE="${RAKNET_LOCATION}"/build/lib/libRakNetLibStatic.a"
 
   if [ $BUILD_OSG ]; then
     CMAKE_PARAMS="$CMAKE_PARAMS \
@@ -787,7 +764,7 @@ if [ $MAKE_PACKAGE ]; then
 
   PACKAGE_BINARIES=("tes3mp" "tes3mp-browser" "tes3mp-server" "openmw-launcher" "openmw-wizard" "openmw-essimporter" "openmw-iniimporter" "bsatool" "esmtool")
   LIBRARIES_OPENMW=("libavcodec.so" "libavformat.so" "libavutil.so" "libboost_filesystem.so" "libboost_program_options.so" "libboost_system.so" "libboost_thread.so" "libBulletCollision.so" "libbz2.so" "libLinearMath.so" "libMyGUIEngine.so" "libopenal.so" "libOpenThreads.so" "libosgAnimation.so" "libosgDB.so" "libosgFX.so" "libosgGA.so" "libosgParticle.so" "libosg.so" "libosgText.so" "libosgUtil.so" "libosgViewer.so" "libosgWidget.so" "libSDL2" "libswresample.so" "libswscale.so" "libts.so" "libtxc_dxtn.so" "libunshield.so" "libuuid.so" "osgPlugins") #"libfreetype.so"
-  LIBRARIES_TES3MP=("libcallff.a" "libRakNetLibStatic.a" "libterra.a" "libtinfo.so")
+  LIBRARIES_TES3MP=("libcallff.a" "libRakNetLibStatic.a" "libtinfo.so")
   LIBRARIES_EXTRA=("libpng16.so" "libpng12.so") #"libstdc++.so.6"
   LIBRARIES_SERVER=("libboost_system.so" "libboost_filesystem.so" "libboost_program_options.so")
 

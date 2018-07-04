@@ -44,6 +44,8 @@ Please report bugs in the GitHub issue page or directly on the TES3MP Discord.
 https://github.com/GrimKriegor/TES3MP-deploy
 "
 
+SCRIPT_DIR="$(dirname $(readlink -f $0))"
+
 echo -e "$HEADERTEXT"
 
 
@@ -63,7 +65,7 @@ function run_in_container() {
   echo -e "\n[!] Now running inside the TES3MP-forge container [!]\n\n"
 
   #RUN THROUGH TES3MP-FORGE
-  eval $(which docker) run --name tes3mp-deploy --rm -it -v "$PWD/tes3mp-deploy.sh":"/deploy/tes3mp-deploy.sh" -v "$PWD/container":"/build" --entrypoint "/bin/bash" grimkriegor/tes3mp-forge /deploy/tes3mp-deploy.sh --skip-pkgs --cmake-local "$ARGUMENTS"
+  eval $(which docker) run --name tes3mp-deploy --rm -it -v "$SCRIPT_DIR/tes3mp-deploy.sh":"/deploy/tes3mp-deploy.sh" -v "$SCRIPT_DIR/container":"/build" --entrypoint "/bin/bash" grimkriegor/tes3mp-forge /deploy/tes3mp-deploy.sh --skip-pkgs --cmake-local "$ARGUMENTS"
 
   exit 0
 }

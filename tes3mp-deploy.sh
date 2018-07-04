@@ -632,7 +632,6 @@ if [ $REBUILD ]; then
 
   echo -e "\n>> Doing a clean build of TES3MP"
 
-  read #DELETEME
   rm -r "$DEVELOPMENT"
   mkdir -p "$DEVELOPMENT"
 

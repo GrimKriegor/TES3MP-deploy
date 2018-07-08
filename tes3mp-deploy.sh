@@ -61,11 +61,13 @@ function run_in_container() {
   #CLEAN ARGUMENTS
   ARGUMENTS=$(echo "$@" | sed 's/-C//;s/--container//')
 
+  #PULL OR UPDATE FORGE IMAGE
+  $(which docker) pull grimkriegor/tes3mp-forge
+
   #NOTIFY
-  echo -e "\n[!] Now running inside the TES3MP-forge container [!]\n\n"
+  echo -e "\n[!] Now running inside the TES3MP-forge container [!]\n"
 
   #RUN THROUGH TES3MP-FORGE
-  $(which docker) pull grimkriegor/tes3mp-forge
   eval $(which docker) run --name tes3mp-deploy --rm -it -v "$SCRIPT_DIR/tes3mp-deploy.sh":"/deploy/tes3mp-deploy.sh" -v "$SCRIPT_DIR/container":"/build" --entrypoint "/bin/bash" grimkriegor/tes3mp-forge /deploy/tes3mp-deploy.sh --skip-pkgs --cmake-local "$ARGUMENTS"
 
   exit 0
@@ -304,7 +306,7 @@ if [ $INSTALL ]; then
   case $DISTRO in
     "arch" | "parabola" | "manjarolinux" )
         echo -e "You seem to be running either Arch Linux, Parabola GNU/Linux-libre or Manjaro"
-        sudo pacman -Sy --needed unzip wget git cmake boost openal openscenegraph mygui bullet qt5-base ffmpeg sdl2 unshield libxkbcommon-x11 ncurses luajit #clang35 llvm35
+        sudo pacman -Sy --needed unzip wget git cmake boost openal openscenegraph mygui bullet qt5-base ffmpeg sdl2 unshield libxkbcommon-x11 ncurses luajit
 
         if [ ! -d "/usr/share/licenses/gcc-libs-multilib/" ]; then
               sudo pacman -S --needed gcc-libs
@@ -314,7 +316,7 @@ if [ $INSTALL ]; then
     "debian" | "devuan" )
         echo -e "You seem to be running Debian or Devuan"
         sudo apt-get update
-        sudo apt-get install unzip wget git cmake libopenal-dev qt5-default libqt5opengl5-dev libopenthreads-dev libopenscenegraph-3.4-dev libsdl2-dev libqt4-dev libboost-filesystem-dev libboost-thread-dev libboost-program-options-dev libboost-system-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libswresample-dev libmygui-dev libunshield-dev cmake build-essential libqt4-opengl-dev g++ libncurses5-dev libluajit-5.1-dev liblua5.1-0-dev #libbullet-dev
+        sudo apt-get install unzip wget git cmake libopenal-dev qt5-default libqt5opengl5-dev libopenthreads-dev libopenscenegraph-3.4-dev libsdl2-dev libqt4-dev libboost-filesystem-dev libboost-thread-dev libboost-program-options-dev libboost-system-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libswresample-dev libmygui-dev libunshield-dev cmake build-essential libqt4-opengl-dev g++ libncurses5-dev libluajit-5.1-dev liblua5.1-0-dev
         sudo sed -i "s,# deb-src,deb-src,g" /etc/apt/sources.list
         sudo apt-get build-dep bullet
         BUILD_BULLET=true
@@ -330,7 +332,7 @@ if [ $INSTALL ]; then
               echo -e "Done!"
         fi
         sudo apt-get update
-        sudo apt-get install unzip wget git cmake libopenal-dev qt5-default libqt5opengl5-dev libopenthreads-dev libopenscenegraph-3.4-dev libsdl2-dev libqt4-dev libboost-filesystem-dev libboost-thread-dev libboost-program-options-dev libboost-system-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libswresample-dev libmygui-dev libunshield-dev cmake build-essential libqt4-opengl-dev g++ libncurses5-dev luajit libluajit-5.1-dev liblua5.1-0-dev #llvm-3.5 clang-3.5 libclang-3.5-dev llvm-3.5-dev libbullet-dev
+        sudo apt-get install unzip wget git cmake libopenal-dev qt5-default libqt5opengl5-dev libopenthreads-dev libopenscenegraph-3.4-dev libsdl2-dev libqt4-dev libboost-filesystem-dev libboost-thread-dev libboost-program-options-dev libboost-system-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libswresample-dev libmygui-dev libunshield-dev cmake build-essential libqt4-opengl-dev g++ libncurses5-dev luajit libluajit-5.1-dev liblua5.1-0-dev
         sudo sed -i "s,# deb-src,deb-src,g" /etc/apt/sources.list
         sudo apt-get build-dep bullet
         BUILD_BULLET=true
@@ -346,7 +348,7 @@ if [ $INSTALL ]; then
               echo -e "Done!"
         fi
         sudo dnf --refresh groupinstall development-tools
-        sudo dnf --refresh install unzip wget cmake openal-devel OpenSceneGraph-qt-devel SDL2-devel qt5-devel boost-filesystem git boost-thread boost-program-options boost-system ffmpeg-devel ffmpeg-libs bullet-devel gcc-c++ mygui-devel unshield-devel tinyxml-devel cmake ncurses-c++-libs ncurses-devel luajit-devel #llvm35 llvm clang ncurses
+        sudo dnf --refresh install unzip wget cmake openal-devel OpenSceneGraph-qt-devel SDL2-devel qt5-devel boost-filesystem git boost-thread boost-program-options boost-system ffmpeg-devel ffmpeg-libs bullet-devel gcc-c++ mygui-devel unshield-devel tinyxml-devel cmake ncurses-c++-libs ncurses-devel luajit-devel
         BUILD_BULLET=true
     ;;
 

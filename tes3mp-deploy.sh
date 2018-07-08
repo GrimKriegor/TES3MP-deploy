@@ -65,6 +65,7 @@ function run_in_container() {
   echo -e "\n[!] Now running inside the TES3MP-forge container [!]\n\n"
 
   #RUN THROUGH TES3MP-FORGE
+  $(which docker) pull grimkriegor/tes3mp-forge
   eval $(which docker) run --name tes3mp-deploy --rm -it -v "$SCRIPT_DIR/tes3mp-deploy.sh":"/deploy/tes3mp-deploy.sh" -v "$SCRIPT_DIR/container":"/build" --entrypoint "/bin/bash" grimkriegor/tes3mp-forge /deploy/tes3mp-deploy.sh --skip-pkgs --cmake-local "$ARGUMENTS"
 
   exit 0

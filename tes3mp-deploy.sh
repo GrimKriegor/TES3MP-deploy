@@ -82,10 +82,10 @@ function run_in_container() {
   $(which docker) pull "$CONTAINER_IMAGE"
 
   #NOTIFY
-  echo -e "\n[!] Now running inside the TES3MP-forge container [!]\n"
   if [ $CONTAINER_IS_EMULATED ]; then
-    echo -e "Emulating $CONTAINER_ARCHITECTURE!\n"
+    echo -e "Emulating $CONTAINER_ARCHITECTURE in $(uname -m)\n"
   fi
+  echo -e "\n[!] Now running inside the TES3MP-forge container [!]\n"
 
   #RUN THROUGH CONTAINER
   eval $(which docker) run --rm -it \

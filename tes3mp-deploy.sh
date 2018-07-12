@@ -31,7 +31,7 @@ Options:
   -v, --version ID		Checkout and build a specific TES3MP commit or branch
   -V, --version-string STRING	Set the version string for compatibility
   -m, --build-master		Build the master server
-  -C, --container		Run inside a container, for increasced compatibility
+  -C, --container [ARCH]      	Run inside a container, optionally specify container architecture
 
 Peculiar options:
   --debug-symbols		Build with debug symbols
@@ -58,17 +58,42 @@ function run_in_container() {
     exit 1
   fi
 
+  #DETERMINE FORGE IMAGE
+  case $CONTAINER_ARCHITECTURE in
+    armhf )
+      CONTAINER_IMAGE="grimkriegor/tes3mp-forge-armhf:latest"
+      CONTAINER_IS_EMULATED=true
+    ;;
+    * )
+      CONTAINER_IMAGE="grimkriegor/tes3mp-forge:latest"
+    ;;
+  esac
+
+  #REGISTER QEMU EXECUTABLES IF CONTAINER IS EMULATED
+  if [ $CONTAINER_IS_EMULATED ]; then
+    $(which docker) run --rm --privileged \
+      multiarch/qemu-user-static:register --reset
+  fi
+
   #CLEAN ARGUMENTS
   ARGUMENTS=$(echo "$@" | sed 's/-C//;s/--container//')
 
   #PULL OR UPDATE FORGE IMAGE
-  $(which docker) pull grimkriegor/tes3mp-forge
+  $(which docker) pull "$CONTAINER_IMAGE"
 
   #NOTIFY
   echo -e "\n[!] Now running inside the TES3MP-forge container [!]\n"
+  if [ $CONTAINER_IS_EMULATED ]; then
+    echo -e "Emulating $CONTAINER_ARCHITECTURE!\n"
+  fi
 
-  #RUN THROUGH TES3MP-FORGE
-  eval $(which docker) run --name tes3mp-deploy --rm -it -v "$SCRIPT_DIR/tes3mp-deploy.sh":"/deploy/tes3mp-deploy.sh" -v "$SCRIPT_DIR/container":"/build" --entrypoint "/bin/bash" grimkriegor/tes3mp-forge /deploy/tes3mp-deploy.sh --skip-pkgs --cmake-local "$ARGUMENTS"
+  #RUN THROUGH CONTAINER
+  eval $(which docker) run --rm -it \
+    -v "$SCRIPT_DIR/tes3mp-deploy.sh":"/deploy/tes3mp-deploy.sh" \
+    -v "$SCRIPT_DIR/container":"/build" \
+    --entrypoint "/bin/bash" \
+    "$CONTAINER_IMAGE" \
+    /deploy/tes3mp-deploy.sh --skip-pkgs --cmake-local "$ARGUMENTS"
 
   exit 0
 }
@@ -170,7 +195,11 @@ else
 
     #RUN IN CONTAINER
     -C | --container )
-    run_in_container "$SCRIPT_ARGS"
+      if [[ "$2" =~ ^-.* || "$2" =~ "" ]]; then
+	CONTAINER_ARCHITECTURE="$2"
+	shift
+      fi
+      RUN_IN_CONTAINER=true
     ;;
 
     #BUILD WITH DEBUG SYMBOLS
@@ -208,6 +237,11 @@ fi
 if [[ ! $INSTALL && ! $UPGRADE && ! $REBUILD && ! $SCRIPT_UPGRADE && ! $MAKE_PACKAGE ]]; then
   echo -e "\nNo operation specified, exiting."
   exit 1
+fi
+
+#RUN IN CONTAINER
+if [ $RUN_IN_CONTAINER ]; then
+  run_in_container "$SCRIPT_ARGS"
 fi
 
 #NUMBER OF CPU CORES USED FOR COMPILATION
@@ -839,7 +873,7 @@ if [ $MAKE_PACKAGE ]; then
 
   PACKAGE_ARCH=$(uname -m)
   PACKAGE_SYSTEM=$(uname -o  | sed 's,/,+,g')
-  PACKAGE_DISTRO=$(lsb_release -si)
+  PACKAGE_DISTRO="$DISTRO"
   PACKAGE_VERSION=$(cat "$CODE"/components/openmw-mp/Version.hpp | grep TES3MP_VERSION | awk -F'"' '{print $2}')
   PACKAGE_COMMIT=$(git --git-dir=$CODE/.git rev-parse @ | head -c10)
   PACKAGE_COMMIT_SCRIPTS=$(git --git-dir=$KEEPERS/CoreScripts/.git rev-parse @ | head -c10)

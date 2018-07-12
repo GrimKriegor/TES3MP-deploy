@@ -61,7 +61,8 @@ function run_in_container() {
   #CLEAN SCRIPT ARGUMENTS
   SCRIPT_ARGUMENTS=$(echo "$@" | sed 's/-C//;s/--container//')
 
-  #DEFAULT ARGUMENTS
+  #DEFAULTS
+  CONTAINER_FOLDER_NAME="container"
   CONTAINER_DEFAULT_ARGS="--skip-pkgs --cmake-local"
 
   #DETERMINE FORGE IMAGE
@@ -69,6 +70,7 @@ function run_in_container() {
     armhf )
       CONTAINER_IMAGE="grimkriegor/tes3mp-forge-armhf:latest"
       CONTAINER_IS_EMULATED=true
+      CONTAINER_FOLDER_NAME="container-armhf"
       CONTAINER_DEFAULT_ARGS=$(echo $CONTAINER_DEFAULT_ARGS | sed 's/--cmake-local//')
     ;;
     * )
@@ -94,7 +96,7 @@ function run_in_container() {
   #RUN THROUGH CONTAINER
   eval $(which docker) run --rm -it \
     -v "$SCRIPT_DIR/tes3mp-deploy.sh":"/deploy/tes3mp-deploy.sh" \
-    -v "$SCRIPT_DIR/container":"/build" \
+    -v "$SCRIPT_DIR/$CONTAINER_FOLDER_NAME":"/build" \
     --entrypoint "/bin/bash" \
     "$CONTAINER_IMAGE" \
     /deploy/tes3mp-deploy.sh "$CONTAINER_DEFAULT_ARGS" "$SCRIPT_ARGUMENTS"

@@ -58,16 +58,26 @@ function run_in_container() {
     exit 1
   fi
 
+  #CLEAN SCRIPT ARGUMENTS
+  SCRIPT_ARGUMENTS=$(echo "$@" | sed 's/-C//;s/--container//')
+
+  #DEFAULT ARGUMENTS
+  CONTAINER_DEFAULT_ARGS="--skip-pkgs --cmake-local"
+
   #DETERMINE FORGE IMAGE
   case $CONTAINER_ARCHITECTURE in
     armhf )
       CONTAINER_IMAGE="grimkriegor/tes3mp-forge-armhf:latest"
       CONTAINER_IS_EMULATED=true
+      CONTAINER_DEFAULT_ARGS=$(echo $CONTAINER_DEFAULT_ARGS | sed 's/--cmake-local//')
     ;;
     * )
       CONTAINER_IMAGE="grimkriegor/tes3mp-forge:latest"
     ;;
   esac
+
+  #PULL OR UPDATE FORGE IMAGE
+  $(which docker) pull "$CONTAINER_IMAGE"
 
   #REGISTER QEMU EXECUTABLES IF CONTAINER IS EMULATED
   if [ $CONTAINER_IS_EMULATED ]; then
@@ -75,15 +85,9 @@ function run_in_container() {
       multiarch/qemu-user-static:register --reset
   fi
 
-  #CLEAN ARGUMENTS
-  ARGUMENTS=$(echo "$@" | sed 's/-C//;s/--container//')
-
-  #PULL OR UPDATE FORGE IMAGE
-  $(which docker) pull "$CONTAINER_IMAGE"
-
   #NOTIFY
   if [ $CONTAINER_IS_EMULATED ]; then
-    echo -e "Emulating $CONTAINER_ARCHITECTURE in $(uname -m)\n"
+    echo -e "\nEmulating $CONTAINER_ARCHITECTURE on $(uname -m)"
   fi
   echo -e "\n[!] Now running inside the TES3MP-forge container [!]\n"
 
@@ -93,7 +97,7 @@ function run_in_container() {
     -v "$SCRIPT_DIR/container":"/build" \
     --entrypoint "/bin/bash" \
     "$CONTAINER_IMAGE" \
-    /deploy/tes3mp-deploy.sh --skip-pkgs --cmake-local "$ARGUMENTS"
+    /deploy/tes3mp-deploy.sh "$CONTAINER_DEFAULT_ARGS" "$SCRIPT_ARGUMENTS"
 
   exit 0
 }

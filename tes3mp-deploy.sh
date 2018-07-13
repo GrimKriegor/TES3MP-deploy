@@ -346,7 +346,22 @@ if [ $INSTALL ]; then
   case $DISTRO in
     "arch" | "parabola" | "manjarolinux" )
         echo -e "You seem to be running either Arch Linux, Parabola GNU/Linux-libre or Manjaro"
-        sudo pacman -Sy --needed unzip wget git cmake boost openal openscenegraph mygui bullet qt5-base ffmpeg sdl2 unshield libxkbcommon-x11 ncurses luajit
+        sudo pacman -Sy --needed unzip \
+	  wget \
+	  git \
+	  cmake \
+	  boost \
+	  openal \
+	  openscenegraph \
+	  mygui \
+	  bullet \
+	  qt5-base \
+	  ffmpeg \
+	  sdl2 \
+	  unshield \
+	  libxkbcommon-x11 \
+	  ncurses \
+	  luajit
 
         if [ ! -d "/usr/share/licenses/gcc-libs-multilib/" ]; then
               sudo pacman -S --needed gcc-libs
@@ -356,7 +371,37 @@ if [ $INSTALL ]; then
     "debian" | "devuan" )
         echo -e "You seem to be running Debian or Devuan"
         sudo apt-get update
-        sudo apt-get install unzip wget git cmake libopenal-dev qt5-default libqt5opengl5-dev libopenthreads-dev libopenscenegraph-3.4-dev libsdl2-dev libqt4-dev libboost-filesystem-dev libboost-thread-dev libboost-program-options-dev libboost-system-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libswresample-dev libmygui-dev libunshield-dev cmake build-essential libqt4-opengl-dev g++ libncurses5-dev libluajit-5.1-dev liblua5.1-0-dev
+        sudo apt-get install \
+	  unzip \
+	  wget \
+	  git \
+	  cmake \
+	  libopenal-dev \
+	  qt5-default \
+	  libqt5opengl5-dev \
+	  libopenthreads-dev \
+	  libopenscenegraph-3.4-dev \
+	  libsdl2-dev \
+	  libqt4-dev \
+	  libboost-filesystem-dev \
+	  libboost-thread-dev \
+	  libboost-program-options-dev \
+	  libboost-system-dev \
+	  libavcodec-dev \
+	  libavformat-dev \
+	  libavutil-dev \
+	  libswscale-dev \
+	  libswresample-dev \
+	  libmygui-dev \
+	  libunshield-dev \
+	  cmake \
+	  build-essential \
+	  libqt4-opengl-dev \
+	  g++ \
+	  libncurses5-dev \
+	  libluajit-5.1-dev \
+	  liblua5.1-0-dev
+
         sudo sed -i "s,# deb-src,deb-src,g" /etc/apt/sources.list
         sudo apt-get build-dep bullet
         BUILD_BULLET=true
@@ -372,7 +417,37 @@ if [ $INSTALL ]; then
               echo -e "Done!"
         fi
         sudo apt-get update
-        sudo apt-get install unzip wget git cmake libopenal-dev qt5-default libqt5opengl5-dev libopenthreads-dev libopenscenegraph-3.4-dev libsdl2-dev libqt4-dev libboost-filesystem-dev libboost-thread-dev libboost-program-options-dev libboost-system-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libswresample-dev libmygui-dev libunshield-dev cmake build-essential libqt4-opengl-dev g++ libncurses5-dev luajit libluajit-5.1-dev liblua5.1-0-dev
+        sudo apt-get install \
+	  unzip \
+	  wget \
+	  git \
+	  cmake \
+	  libopenal-dev \
+	  qt5-default \
+	  libqt5opengl5-dev \
+	  libopenthreads-dev \
+	  libopenscenegraph-3.4-dev \
+	  libsdl2-dev \
+	  libqt4-dev \
+	  libboost-filesystem-dev \
+	  libboost-thread-dev \
+	  libboost-program-options-dev \
+	  libboost-system-dev \
+	  libavcodec-dev \
+	  libavformat-dev \
+	  libavutil-dev \
+	  libswscale-dev \
+	  libswresample-dev \
+	  libmygui-dev \
+	  libunshield-dev \
+	  cmake \
+	  build-essential \
+	  libqt4-opengl-dev \
+	  g++ \
+	  libncurses5-dev \
+	  luajit \
+	  libluajit-5.1-dev \
+	  liblua5.1-0-dev
         sudo sed -i "s,# deb-src,deb-src,g" /etc/apt/sources.list
         sudo apt-get build-dep bullet
         BUILD_BULLET=true
@@ -388,7 +463,30 @@ if [ $INSTALL ]; then
               echo -e "Done!"
         fi
         sudo dnf --refresh groupinstall development-tools
-        sudo dnf --refresh install unzip wget cmake openal-devel OpenSceneGraph-qt-devel SDL2-devel qt5-devel boost-filesystem git boost-thread boost-program-options boost-system ffmpeg-devel ffmpeg-libs bullet-devel gcc-c++ mygui-devel unshield-devel tinyxml-devel cmake ncurses-c++-libs ncurses-devel luajit-devel
+        sudo dnf --refresh install \
+	  unzip \
+	  wget \
+	  cmake \
+	  openal-devel \
+	  OpenSceneGraph-qt-devel \
+	  SDL2-devel \
+	  qt5-devel \
+	  boost-filesystem \
+	  git \
+	  boost-thread \
+	  boost-program-options \
+	  boost-system \
+	  ffmpeg-devel \
+	  ffmpeg-libs \
+	  bullet-devel \
+	  gcc-c++ \
+	  mygui-devel \
+	  unshield-devel \
+	  tinyxml-devel \
+	  cmake \
+	  ncurses-c++-libs \
+	  ncurses-devel \
+	  luajit-devel
         BUILD_BULLET=true
     ;;
 
@@ -467,9 +565,7 @@ if [ $INSTALL ]; then
       rm -f CMakeCache.txt
       cmake -DCMAKE_INSTALL_PREFIX="$DEPENDENCIES"/bullet/install -DBUILD_SHARED_LIBS=1 -DINSTALL_LIBS=1 -DINSTALL_EXTRA_LIBS=1 -DCMAKE_BUILD_TYPE=Release ..
       make -j$CORES
-
       make install
-
       cd "$BASE"
   fi
 
@@ -567,7 +663,6 @@ if [ $UPGRADE ]; then
       fi
     fi
   fi
-
 fi
 
 #CORESCRIPTS HANDLING (Hack, please make me more elegant later :( )
@@ -805,11 +900,70 @@ fi
 if [ $MAKE_PACKAGE ]; then
   echo -e "\n>> Creating TES3MP package"
 
-  PACKAGE_BINARIES=("tes3mp" "tes3mp-browser" "tes3mp-server" "openmw-launcher" "openmw-wizard" "openmw-essimporter" "openmw-iniimporter" "bsatool" "esmtool")
-  LIBRARIES_OPENMW=("libavcodec.so" "libavformat.so" "libavutil.so" "libboost_filesystem.so" "libboost_program_options.so" "libboost_system.so" "libboost_thread.so" "libBulletCollision.so" "libbz2.so" "libLinearMath.so" "libMyGUIEngine.so" "libopenal.so" "libOpenThreads.so" "libosgAnimation.so" "libosgDB.so" "libosgFX.so" "libosgGA.so" "libosgParticle.so" "libosg.so" "libosgText.so" "libosgUtil.so" "libosgViewer.so" "libosgWidget.so" "libSDL2" "libswresample.so" "libswscale.so" "libts.so" "libtxc_dxtn.so" "libunshield.so" "libuuid.so" "osgPlugins") #"libfreetype.so"
-  LIBRARIES_TES3MP=("libcallff.a" "libRakNetLibStatic.a" "libtinfo.so" "liblua5.1.so")
-  LIBRARIES_EXTRA=("libpng16.so" "libpng12.so") #"libstdc++.so.6"
-  LIBRARIES_SERVER=("libboost_system.so" "libboost_filesystem.so" "libboost_program_options.so" "liblua5.1.so")
+  PACKAGE_BINARIES=( \
+    "tes3mp" \
+    "tes3mp-browser" \
+    "tes3mp-server" \
+    "openmw-launcher" \
+    "openmw-wizard" \
+    "openmw-essimporter" \
+    "openmw-iniimporter" \
+    "bsatool" \
+    "esmtool" \
+   )
+
+  LIBRARIES_OPENMW=( \
+    "libavcodec.so" \
+    "libavformat.so" \
+    "libavutil.so" \
+    "libboost_filesystem.so" \
+    "libboost_program_options.so" \
+    "libboost_system.so" \
+    "libboost_thread.so" \
+    "libBulletCollision.so" \
+    "libbz2.so" \
+    "libLinearMath.so" \
+    "libMyGUIEngine.so" \
+    "libopenal.so" \
+    "libOpenThreads.so" \
+    "libosgAnimation.so" \
+    "libosgDB.so" \
+    "libosgFX.so" \
+    "libosgGA.so" \
+    "libosgParticle.so" \
+    "libosg.so" \
+    "libosgText.so" \
+    "libosgUtil.so" \
+    "libosgViewer.so" \
+    "libosgWidget.so" \
+    "libSDL2" \
+    "libswresample.so" \
+    "libswscale.so" \
+    "libts.so" \
+    "libtxc_dxtn.so" \
+    "libunshield.so" \
+    "libuuid.so" \
+    "osgPlugins" \
+  )
+
+  LIBRARIES_TES3MP=( \
+    "libcallff.a" \
+    "libRakNetLibStatic.a" \
+    "libtinfo.so" \
+    "liblua5.1.so" \
+   )
+
+  LIBRARIES_EXTRA=( \
+    "libpng16.so" \
+    "libpng12.so" \
+  )
+
+  LIBRARIES_SERVER=( \
+    "libboost_system.so" \
+    "libboost_filesystem.so" \
+    "libboost_program_options.so" \
+    "liblua5.1.so" \
+  )
 
   #EXIT IF TES3MP hasn't been compiled yet
   if [[ ! -f "$DEVELOPMENT"/tes3mp && ! -f "$DEVELOPMENT"/tes3mp-server ]]; then
@@ -919,12 +1073,6 @@ if [[ "$ARGS" = 'tes3mp-server' ]]; then
             cp -rf "$GAMEDIR"/CoreScripts/ "$TES3MP_HOME"/
             sed -i "s|home = .*|home = $TES3MP_HOME/CoreScripts |g" "$TES3MP_HOME"/tes3mp-server.cfg
         fi
-        #if [[ -e "$TES3MP_HOME"/resources ]]; then
-        #    echo -e "Loading resources folder from the home directory"
-        #else
-        #    echo -e "Resources folder not found in home directory, linking from package directory"
-        #    ln -sf "$GAMEDIR"/resources "$TES3MP_HOME"/
-        #fi
     fi
 else
     if [[ -f $TES3MP_HOME/tes3mp-client.cfg ]]; then

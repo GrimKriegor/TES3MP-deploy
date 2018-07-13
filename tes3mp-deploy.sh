@@ -409,7 +409,13 @@ if [ $INSTALL ]; then
 
     "ubuntu" | "linuxmint" | "elementary" )
         echo -e "You seem to be running Ubuntu, Mint or elementary OS"
-        echo -e "\nThe OpenMW PPA repository needs to be enabled\nhttps://wiki.openmw.org/index.php?title=Development_Environment_Setup#Ubuntu\n\nType YES if you want the script to do it automatically\nIf you already have it enabled or want to do it manually,\npress ENTER to continue"
+        echo -e "
+The OpenMW PPA repository needs to be enabled
+https://wiki.openmw.org/index.php?title=Development_Environment_Setup#Ubuntu
+
+Type YES if you want the script to do it automatically
+If you already have it enabled or want to do it manually,
+press ENTER to continue"
         read INPUT
         if [ "$INPUT" == "YES" ]; then
               echo -e "\nEnabling the OpenMW PPA repository..."
@@ -455,11 +461,20 @@ if [ $INSTALL ]; then
 
     "fedora" )
         echo -e "You seem to be running Fedora"
-        echo -e "\nFedora users are required to enable the RPMFusion FREE and NON-FREE repositories\nhttps://wiki.openmw.org/index.php?title=Development_Environment_Setup#Fedora_Workstation\n\nType YES if you want the script to do it automatically\nIf you already have it enabled or want to do it manually,\npress ENTER to continue"
+        echo -e "
+Fedora users are required to enable the RPMFusion FREE and NON-FREE repositories
+https://wiki.openmw.org/index.php?title=Development_Environment_Setup#Fedora_Workstation
+
+Type YES if you want the script to do it automatically
+If you already have it enabled or want to do it manually,
+press ENTER to continue
+"
         read INPUT
         if [ "$INPUT" == "YES" ]; then
               echo -e "\nEnabling RPMFusion..."
-              su -c 'dnf install http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm'
+              su -c 'dnf install \
+		http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+		http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm'
               echo -e "Done!"
         fi
         sudo dnf --refresh groupinstall development-tools
@@ -503,7 +518,13 @@ if [ $INSTALL ]; then
   GCCVERSION_F=$(echo $GCCVERSION | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/')
   GCCVERSION_P=$((${GCCVERSION_F}*(10**(5-${#GCCVERSION_F}))))
   if [ $GCCVERSION_P -lt 60100 ]; then
-    echo -e "\nTES3MP requires some fairly recent C++ features.\nCurrent GCC version is $GCCVERSION.\nUpdate GCC to at least version 6.1 to proceed.\n\nOnly upgrade your toolchain if you know what you are doing.\nProceed at your own risk."
+    echo -e "
+TES3MP requires some fairly recent C++ features. \
+Current GCC version is $GCCVERSION. \
+Update GCC to at least version 6.1 to proceed.
+
+Only upgrade your toolchain if you know what you are doing.
+Proceed at your own risk."
     exit 1
   fi
 

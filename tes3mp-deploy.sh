@@ -839,8 +839,13 @@ if [ $MAKE_PACKAGE ]; then
 
   #COPY USEFUL FILES
   echo -e "\nCopying useful files"
-  cp -r "$KEEPERS"/{CoreScripts,*.cfg} .
-  sed -i "s|home = .*|home = ./CoreScripts|g" "${PACKAGE_TMP}"/tes3mp-server-default.cfg
+  cp -r "$KEEPERS"/{CoreScripts,*.cfg} "$PACKAGE_TMP"
+  sed -i "s|home = .*|home = ./CoreScripts|g" "$PACKAGE_TMP"/tes3mp-server-default.cfg
+
+  #COPY CREDITATION FILES
+  echo -e "\nCopying creditation files"
+  cp "$CODE"/AUTHORS.md "$PACKAGE_TMP"
+  cp "$CODE"/tes3mp-credits.md "$PACKAGE_TMP"
 
   #COPY WHATEVER EXTRA FILES ARE CURRENTLY PRESENT
   if [ -d "$EXTRA" ]; then

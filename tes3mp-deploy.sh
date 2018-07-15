@@ -239,15 +239,15 @@ else
 
 fi
 
+#RUN IN CONTAINER
+if [ $RUN_IN_CONTAINER ]; then
+  run_in_container "$SCRIPT_ARGS"
+fi
+
 #EXIT IF NO OPERATION IS SPECIFIED
 if [[ ! $INSTALL && ! $UPGRADE && ! $REBUILD && ! $SCRIPT_UPGRADE && ! $MAKE_PACKAGE ]]; then
   echo -e "\nNo operation specified, exiting."
   exit 1
-fi
-
-#RUN IN CONTAINER
-if [ $RUN_IN_CONTAINER ]; then
-  run_in_container "$SCRIPT_ARGS"
 fi
 
 #NUMBER OF CPU CORES USED FOR COMPILATION

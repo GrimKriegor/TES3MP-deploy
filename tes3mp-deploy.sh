@@ -534,6 +534,11 @@ Proceed at your own risk."
     BUILD_BULLET=""
   fi
 
+  #TRUNCATE TARGET_COMMIT WHEN IT POINTS TO STABLE
+  if [ "$TARGET_COMMIT" == "stable" ]; then
+    TARGET_COMMIT="$TES3MP_STABLE_VERSION"
+  fi
+
   #PULL SOFTWARE VIA GIT
   echo -e "\n>> Downloading software"
   ! [ -e "$CODE" ] && git clone https://github.com/TES3MP/openmw-tes3mp.git "$CODE"

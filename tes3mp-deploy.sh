@@ -906,6 +906,11 @@ if [ $REBUILD ]; then
     ln -sf "$KEEPERS"/version "$DEVELOPMENT"/resources/version
   fi
 
+  #COPY CREDITATION FILES
+  echo -e "\n>> Copying creditation files"
+  cp "$CODE"/AUTHORS.md "$DEVELOPMENT"
+  cp "$CODE"/tes3mp-credits.md "$DEVELOPMENT"
+
   #ALL DONE
   echo -e "\n\n\nAll done! Press any key to exit.\nMay Vehk bestow his blessing upon your Muatra."
 
@@ -1010,11 +1015,6 @@ if [ $MAKE_PACKAGE ]; then
   echo -e "\nCopying useful files"
   cp -r "$KEEPERS"/{CoreScripts,*.cfg} "$PACKAGE_TMP"
   sed -i "s|home = .*|home = ./CoreScripts|g" "$PACKAGE_TMP"/tes3mp-server-default.cfg
-
-  #COPY CREDITATION FILES
-  echo -e "\nCopying creditation files"
-  cp "$CODE"/AUTHORS.md "$PACKAGE_TMP"
-  cp "$CODE"/tes3mp-credits.md "$PACKAGE_TMP"
 
   #COPY WHATEVER EXTRA FILES ARE CURRENTLY PRESENT
   if [ -d "$EXTRA" ]; then

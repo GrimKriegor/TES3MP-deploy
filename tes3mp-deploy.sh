@@ -574,7 +574,7 @@ Proceed at your own risk."
       echo -e "\n>> Building OpenSceneGraph"
       mkdir -p "$DEPENDENCIES"/osg/build
       cd "$DEPENDENCIES"/osg/build
-      git checkout tags/OpenSceneGraph-3.4.0
+      git checkout 3.4.0
       rm -f CMakeCache.txt
       cmake ..
       make -j$CORES

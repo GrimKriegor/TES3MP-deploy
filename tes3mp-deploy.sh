@@ -1023,7 +1023,7 @@ if [ $MAKE_PACKAGE ]; then
   #COPY WHATEVER EXTRA FILES ARE CURRENTLY PRESENT
   if [ -d "$EXTRA" ]; then
     echo -e "\nCopying some extra files"
-    cp -rfn --preserve=links "$EXTRA"/* "$PACKAGE_TMP"/
+    cp -rf --preserve=links "$EXTRA"/* "$PACKAGE_TMP"/
   fi
 
   #LIST AND COPY ALL LIBS

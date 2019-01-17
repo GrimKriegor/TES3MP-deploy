@@ -596,6 +596,9 @@ Proceed at your own risk."
 
   #BUILD RAKNET
   echo -e "\n>> Building RakNet"
+  cd "$DEPENDENCIES"/raknet
+  git checkout 4eeeaad2f6c11aeb82070df35169694b4fb7b04b
+
   mkdir -p "$DEPENDENCIES"/raknet/build
   cd "$DEPENDENCIES"/raknet/build
 

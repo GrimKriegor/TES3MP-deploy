@@ -545,7 +545,7 @@ Proceed at your own risk."
   ! [ -e "$DEPENDENCIES/"callff ] && git clone https://github.com/Koncord/CallFF "$DEPENDENCIES/"callff --depth 1
   if [ $BUILD_OSG ] && ! [ -e "$DEPENDENCIES"/osg ] ; then git clone -b 3.4 https://github.com/OpenMW/osg.git "$DEPENDENCIES"/osg --depth 1; fi
   if [ $BUILD_BULLET ] && ! [ -e "$DEPENDENCIES"/bullet ]; then git clone https://github.com/bulletphysics/bullet3.git "$DEPENDENCIES"/bullet; fi # cannot --depth 1 because we check out specific revision
-  ! [ -e "$DEPENDENCIES"/raknet ] && git clone https://github.com/TES3MP/RakNet.git "$DEPENDENCIES"/raknet --depth 1
+  ! [ -e "$DEPENDENCIES"/raknet ] && git clone https://github.com/TES3MP/CrabNet "$DEPENDENCIES"/raknet
   ! [ -e "$KEEPERS"/CoreScripts ] && git clone -b "${TARGET_COMMIT:-master}" https://github.com/TES3MP/CoreScripts.git "$KEEPERS"/CoreScripts
 
   #COPY STATIC SERVER AND CLIENT CONFIGS

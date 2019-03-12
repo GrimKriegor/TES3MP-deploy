@@ -271,7 +271,6 @@ PACKAGE_TMP="$BASE/package"
 EXTRA="$BASE/extra"
 
 #DEPENDENCY LOCATIONS
-CALLFF_LOCATION="$DEPENDENCIES"/callff
 RAKNET_LOCATION="$DEPENDENCIES"/raknet
 OSG_LOCATION="$DEPENDENCIES"/osg
 BULLET_LOCATION="$DEPENDENCIES"/bullet
@@ -542,7 +541,6 @@ Proceed at your own risk."
   #PULL SOFTWARE VIA GIT
   echo -e "\n>> Downloading software"
   ! [ -e "$CODE" ] && git clone -b "${TARGET_COMMIT:-master}" https://github.com/TES3MP/openmw-tes3mp.git "$CODE"
-  ! [ -e "$DEPENDENCIES/"callff ] && git clone https://github.com/Koncord/CallFF "$DEPENDENCIES/"callff --depth 1
   if [ $BUILD_OSG ] && ! [ -e "$DEPENDENCIES"/osg ] ; then git clone -b 3.4 https://github.com/OpenMW/osg.git "$DEPENDENCIES"/osg --depth 1; fi
   if [ $BUILD_BULLET ] && ! [ -e "$DEPENDENCIES"/bullet ]; then git clone https://github.com/bulletphysics/bullet3.git "$DEPENDENCIES"/bullet; fi # cannot --depth 1 because we check out specific revision
   ! [ -e "$DEPENDENCIES"/raknet ] && git clone https://github.com/TES3MP/CrabNet "$DEPENDENCIES"/raknet
@@ -559,15 +557,6 @@ Proceed at your own risk."
   #DIRTY HACKS
   echo -e "\n>> Applying some dirty hacks"
   sed -i "s|tes3mp.lua,chat_parser.lua|server.lua|g" "${KEEPERS}"/tes3mp-server-default.cfg #Fixes server scripts
-
-  #BUILD CALLFF
-  echo -e "\n>> Building CallFF"
-  mkdir -p "$DEPENDENCIES"/callff/build
-  cd "$DEPENDENCIES"/callff/build
-  cmake ..
-  make -j$CORES
-
-  cd "$BASE"
 
   #BUILD OPENSCENEGRAPH
   if [ $BUILD_OSG ]; then
@@ -803,8 +792,6 @@ if [ $REBUILD ]; then
       -DCMAKE_CXX_STANDARD=14 \
       -DCMAKE_CXX_FLAGS=\"-std=c++14\" \
       -DDESIRED_QT_VERSION=5 \
-      -DCallFF_INCLUDES="${CALLFF_LOCATION}"/include \
-      -DCallFF_LIBRARY="${CALLFF_LOCATION}"/build/src/libcallff.a \
       -DRakNet_INCLUDES="${RAKNET_LOCATION}"/include \
       -DRakNet_LIBRARY_DEBUG="${RAKNET_LOCATION}"/build/lib/libRakNetLibStatic.a \
       -DRakNet_LIBRARY_RELEASE="${RAKNET_LOCATION}"/build/lib/libRakNetLibStatic.a"
@@ -974,7 +961,6 @@ if [ $MAKE_PACKAGE ]; then
   )
 
   LIBRARIES_TES3MP=( \
-    "libcallff.a" \
     "libRakNetLibStatic.a" \
     "libtinfo.so" \
     "liblua5.1.so" \

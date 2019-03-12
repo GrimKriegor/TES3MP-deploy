@@ -17,28 +17,28 @@ HELPTEXT="\
 Usage $0 MODE [OPTIONS]
 
 Modes of operation:
-  -i, --install			Prepare and install TES3MP and its dependencies
-  -u, --upgrade			Upgrade TES3MP
-  -a, --auto-upgrade		Automatically upgrade TES3MP if there are changes on the remote repository
-  -r, --rebuild			Simply rebuild TES3MP
-  -y, --script-upgrade		Upgrade the TES3MP-deploy script
-  -p, --make-package		Make a portable package for easy distribution
-  -h, --help			This help text
+  -i, --install                  Prepare and install TES3MP and its dependencies
+  -u, --upgrade                  Upgrade TES3MP
+  -a, --auto-upgrade             Automatically upgrade TES3MP if there are changes on the remote repository
+  -r, --rebuild                  Simply rebuild TES3MP
+  -y, --script-upgrade           Upgrade the TES3MP-deploy script
+  -p, --make-package             Make a portable package for easy distribution
+  -h, --help                     This help text
 
 Options:
-  -s, --server-only		Only build the server
-  -c, --cores N			Use N cores for building TES3MP and its dependencies
-  -v, --version ID		Checkout and build a specific TES3MP commit or branch
-  -V, --version-string STRING	Set the version string for compatibility
-  -m, --build-master		Build the master server
-  -C, --container [ARCH]      	Run inside a container, optionally specify container architecture
+  -s, --server-only              Only build the server
+  -c, --cores N                  Use N cores for building TES3MP and its dependencies
+  -v, --version ID               Checkout and build a specific TES3MP commit or branch
+  -V, --version-string STRING    Set the version string for compatibility
+  -m, --build-master             Build the master server
+  -C, --container [ARCH]         Run inside a container, optionally specify container architecture
 
 Peculiar options:
-  --debug-symbols		Build with debug symbols
-  --skip-pkgs			Skip package installation
-  --cmake-local			Tell CMake to look in /usr/local/ for libraries
-  --handle-corescripts		Handle CoreScripts, pulls and branch switches
-  --handle-version-file		Handle version file by overwritting it with a persistent one
+  --debug-symbols                Build with debug symbols
+  --skip-pkgs                    Skip package installation
+  --cmake-local                  Tell CMake to look in /usr/local/ for libraries
+  --handle-corescripts           Handle CoreScripts, pulls and branch switches
+  --handle-version-file          Handle version file by overwritting it with a persistent one
 
 Please report bugs in the GitHub issue page or directly on the TES3MP Discord.
 https://github.com/GrimKriegor/TES3MP-deploy
@@ -202,8 +202,8 @@ else
     #RUN IN CONTAINER
     -C | --container )
       if [[ "$2" =~ ^-.* || "$2" =~ "" ]]; then
-	CONTAINER_ARCHITECTURE="$2"
-	shift
+        CONTAINER_ARCHITECTURE="$2"
+        shift
       fi
       RUN_IN_CONTAINER=true
     ;;
@@ -346,21 +346,21 @@ if [ $INSTALL ]; then
     "arch" | "parabola" | "manjarolinux" )
         echo -e "You seem to be running either Arch Linux, Parabola GNU/Linux-libre or Manjaro"
         sudo pacman -Sy --needed unzip \
-	  wget \
-	  git \
-	  cmake \
-	  boost \
-	  openal \
-	  openscenegraph \
-	  mygui \
-	  bullet \
-	  qt5-base \
-	  ffmpeg \
-	  sdl2 \
-	  unshield \
-	  libxkbcommon-x11 \
-	  ncurses \
-	  luajit
+          wget \
+          git \
+          cmake \
+          boost \
+          openal \
+          openscenegraph \
+          mygui \
+          bullet \
+          qt5-base \
+          ffmpeg \
+          sdl2 \
+          unshield \
+          libxkbcommon-x11 \
+          ncurses \
+          luajit
 
         if [ ! -d "/usr/share/licenses/gcc-libs-multilib/" ]; then
               sudo pacman -S --needed gcc-libs
@@ -371,35 +371,35 @@ if [ $INSTALL ]; then
         echo -e "You seem to be running Debian or Devuan"
         sudo apt-get update
         sudo apt-get install \
-	  unzip \
-	  wget \
-	  git \
-	  cmake \
-	  libopenal-dev \
-	  qt5-default \
-	  libqt5opengl5-dev \
-	  libopenthreads-dev \
-	  libopenscenegraph-3.4-dev \
-	  libsdl2-dev \
-	  libqt4-dev \
-	  libboost-filesystem-dev \
-	  libboost-thread-dev \
-	  libboost-program-options-dev \
-	  libboost-system-dev \
-	  libavcodec-dev \
-	  libavformat-dev \
-	  libavutil-dev \
-	  libswscale-dev \
-	  libswresample-dev \
-	  libmygui-dev \
-	  libunshield-dev \
-	  cmake \
-	  build-essential \
-	  libqt4-opengl-dev \
-	  g++ \
-	  libncurses5-dev \
-	  libluajit-5.1-dev \
-	  liblua5.1-0-dev
+          unzip \
+          wget \
+          git \
+          cmake \
+          libopenal-dev \
+          qt5-default \
+          libqt5opengl5-dev \
+          libopenthreads-dev \
+          libopenscenegraph-3.4-dev \
+          libsdl2-dev \
+          libqt4-dev \
+          libboost-filesystem-dev \
+          libboost-thread-dev \
+          libboost-program-options-dev \
+          libboost-system-dev \
+          libavcodec-dev \
+          libavformat-dev \
+          libavutil-dev \
+          libswscale-dev \
+          libswresample-dev \
+          libmygui-dev \
+          libunshield-dev \
+          cmake \
+          build-essential \
+          libqt4-opengl-dev \
+          g++ \
+          libncurses5-dev \
+          libluajit-5.1-dev \
+          liblua5.1-0-dev
 
         sudo sed -i "s,# deb-src,deb-src,g" /etc/apt/sources.list
         sudo apt-get build-dep bullet
@@ -423,36 +423,36 @@ press ENTER to continue"
         fi
         sudo apt-get update
         sudo apt-get install \
-	  unzip \
-	  wget \
-	  git \
-	  cmake \
-	  libopenal-dev \
-	  qt5-default \
-	  libqt5opengl5-dev \
-	  libopenthreads-dev \
-	  libopenscenegraph-3.4-dev \
-	  libsdl2-dev \
-	  libqt4-dev \
-	  libboost-filesystem-dev \
-	  libboost-thread-dev \
-	  libboost-program-options-dev \
-	  libboost-system-dev \
-	  libavcodec-dev \
-	  libavformat-dev \
-	  libavutil-dev \
-	  libswscale-dev \
-	  libswresample-dev \
-	  libmygui-dev \
-	  libunshield-dev \
-	  cmake \
-	  build-essential \
-	  libqt4-opengl-dev \
-	  g++ \
-	  libncurses5-dev \
-	  luajit \
-	  libluajit-5.1-dev \
-	  liblua5.1-0-dev
+          unzip \
+          wget \
+          git \
+          cmake \
+          libopenal-dev \
+          qt5-default \
+          libqt5opengl5-dev \
+          libopenthreads-dev \
+          libopenscenegraph-3.4-dev \
+          libsdl2-dev \
+          libqt4-dev \
+          libboost-filesystem-dev \
+          libboost-thread-dev \
+          libboost-program-options-dev \
+          libboost-system-dev \
+          libavcodec-dev \
+          libavformat-dev \
+          libavutil-dev \
+          libswscale-dev \
+          libswresample-dev \
+          libmygui-dev \
+          libunshield-dev \
+          cmake \
+          build-essential \
+          libqt4-opengl-dev \
+          g++ \
+          libncurses5-dev \
+          luajit \
+          libluajit-5.1-dev \
+          liblua5.1-0-dev
         sudo sed -i "s,# deb-src,deb-src,g" /etc/apt/sources.list
         sudo apt-get build-dep bullet
         BUILD_BULLET=true
@@ -472,35 +472,35 @@ press ENTER to continue
         if [ "$INPUT" == "YES" ]; then
               echo -e "\nEnabling RPMFusion..."
               su -c 'dnf install \
-		http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
-		http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm'
+                http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+                http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm'
               echo -e "Done!"
         fi
         sudo dnf --refresh groupinstall development-tools
         sudo dnf --refresh install \
-	  unzip \
-	  wget \
-	  cmake \
-	  openal-devel \
-	  OpenSceneGraph-qt-devel \
-	  SDL2-devel \
-	  qt5-devel \
-	  boost-filesystem \
-	  git \
-	  boost-thread \
-	  boost-program-options \
-	  boost-system \
-	  ffmpeg-devel \
-	  ffmpeg-libs \
-	  bullet-devel \
-	  gcc-c++ \
-	  mygui-devel \
-	  unshield-devel \
-	  tinyxml-devel \
-	  cmake \
-	  ncurses-c++-libs \
-	  ncurses-devel \
-	  luajit-devel
+          unzip \
+          wget \
+          cmake \
+          openal-devel \
+          OpenSceneGraph-qt-devel \
+          SDL2-devel \
+          qt5-devel \
+          boost-filesystem \
+          git \
+          boost-thread \
+          boost-program-options \
+          boost-system \
+          ffmpeg-devel \
+          ffmpeg-libs \
+          bullet-devel \
+          gcc-c++ \
+          mygui-devel \
+          unshield-devel \
+          tinyxml-devel \
+          cmake \
+          ncurses-c++-libs \
+          ncurses-devel \
+          luajit-devel
         BUILD_BULLET=true
     ;;
 
@@ -666,11 +666,11 @@ if [ $UPGRADE ]; then
       UPGRADE="YES"
     else
       if [ $HANDLE_CORESCRIPTS ]; then
-	echo -e "\nUpgrade CoreScripts at least? (type YES to upgrade)"
-	read CORESCRIPTS_UPGRADE_PROMPT
-	if [ "$CORESCRIPTS_UPGRADE_PROMPT" == "YES" ]; then
-	  UPGRADE="YES"
-	fi
+        echo -e "\nUpgrade CoreScripts at least? (type YES to upgrade)"
+        read CORESCRIPTS_UPGRADE_PROMPT
+        if [ "$CORESCRIPTS_UPGRADE_PROMPT" == "YES" ]; then
+          UPGRADE="YES"
+        fi
       fi
     fi
   fi
@@ -734,8 +734,8 @@ if [ $REBUILD ]; then
       git pull
       git checkout "$TES3MP_STABLE_VERSION"
       if [ $HANDLE_VERSION_FILE ]; then
-	echo -e "\n>> Creating persistent version file"
-	echo -e $TES3MP_STABLE_VERSION_FILE > "$KEEPERS"/version
+        echo -e "\n>> Creating persistent version file"
+        echo -e $TES3MP_STABLE_VERSION_FILE > "$KEEPERS"/version
       fi
     else
       echo -e "\nChecking out $TARGET_COMMIT"

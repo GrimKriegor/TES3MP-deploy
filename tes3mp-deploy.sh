@@ -1006,8 +1006,9 @@ if [ $MAKE_PACKAGE ]; then
 
   #COPY USEFUL FILES
   echo -e "\nCopying useful files"
-  cp -r "$KEEPERS"/{CoreScripts,*.cfg} "$PACKAGE_TMP"
-  sed -i "s|home = .*|home = ./CoreScripts|g" "$PACKAGE_TMP"/tes3mp-server-default.cfg
+  cp -r "$KEEPERS"/CoreScripts "$PACKAGE_TMP"/server
+  cp -r "$KEEPERS"/*.cfg "$PACKAGE_TMP"
+  sed -i "s|home = .*|home = ./server|g" "$PACKAGE_TMP"/tes3mp-server-default.cfg
 
   #COPY WHATEVER EXTRA FILES ARE CURRENTLY PRESENT
   if [ -d "$EXTRA" ]; then
@@ -1079,12 +1080,12 @@ if [[ "$ARGS" = 'tes3mp-server' ]]; then
         LOADING_FROM_HOME=true
     fi
     if [[ $LOADING_FROM_HOME ]]; then
-        if [[ -d "$TES3MP_HOME"/CoreScripts ]]; then
+        if [[ -d "$TES3MP_HOME"/server ]]; then
             echo -e "Loading CoreScripts folder from the home directory"
         else
             echo -e "CoreScripts folder not found in home directory, copying from package directory"
-            cp -rf "$GAMEDIR"/CoreScripts/ "$TES3MP_HOME"/
-            sed -i "s|home = .*|home = $TES3MP_HOME/CoreScripts |g" "$TES3MP_HOME"/tes3mp-server.cfg
+            cp -rf "$GAMEDIR"/server/ "$TES3MP_HOME"/
+            sed -i "s|home = .*|home = $TES3MP_HOME/server |g" "$TES3MP_HOME"/tes3mp-server.cfg
         fi
     fi
 else

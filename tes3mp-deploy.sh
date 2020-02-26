@@ -2,7 +2,7 @@
 
 set -e
 
-VERSION="2.16.0"
+VERSION="2.16.1"
 
 TES3MP_STABLE_VERSION="0.7.0"
 TES3MP_STABLE_VERSION_FILE="0.44.0\n292536439eeda58becdb7e441fe2e61ebb74529e"
@@ -48,7 +48,6 @@ SCRIPT_DIR="$(dirname $(readlink -f $0))"
 
 echo -e "$HEADERTEXT"
 
-
 #RUN IN CONTAINER
 function run_in_container() {
 
@@ -85,22 +84,17 @@ function run_in_container() {
   if [ $CONTAINER_IS_EMULATED ]; then
     $(which docker) run --rm --privileged \
       multiarch/qemu-user-static:register --reset
-  fi
-
-  #NOTIFY
-  if [ $CONTAINER_IS_EMULATED ]; then
     echo -e "\nEmulating $CONTAINER_ARCHITECTURE on $(uname -m)"
   fi
-  echo -e "\n[!] Now running inside the TES3MP-forge container [!]\n"
 
   #RUN THROUGH CONTAINER
+  echo -e "\n[!] Now running inside the TES3MP-forge container [!]\n"
   eval $(which docker) run --rm -it \
     -v "$SCRIPT_DIR/tes3mp-deploy.sh":"/deploy/tes3mp-deploy.sh" \
     -v "$SCRIPT_DIR/$CONTAINER_FOLDER_NAME":"/build" \
     --entrypoint "/bin/bash" \
     "$CONTAINER_IMAGE" \
     /deploy/tes3mp-deploy.sh "$CONTAINER_DEFAULT_ARGS" "$SCRIPT_ARGUMENTS"
-
   exit 0
 }
 
@@ -343,29 +337,6 @@ if [ $INSTALL ]; then
   if [ ! $SKIP_PACKAGE_INSTALL ]; then
   echo -e "\n>> Checking which GNU/Linux distro is installed"
   case $DISTRO in
-    "arch" | "parabola" | "manjarolinux" )
-        echo -e "You seem to be running either Arch Linux, Parabola GNU/Linux-libre or Manjaro"
-        sudo pacman -Sy --needed unzip \
-          wget \
-          git \
-          cmake \
-          boost \
-          openal \
-          openscenegraph \
-          mygui \
-          bullet \
-          qt5-base \
-          ffmpeg \
-          sdl2 \
-          unshield \
-          libxkbcommon-x11 \
-          ncurses \
-          luajit
-
-        if [ ! -d "/usr/share/licenses/gcc-libs-multilib/" ]; then
-              sudo pacman -S --needed gcc-libs
-        fi
-    ;;
 
     "debian" | "devuan" )
         echo -e "You seem to be running Debian or Devuan"
@@ -400,10 +371,32 @@ if [ $INSTALL ]; then
           libncurses5-dev \
           libluajit-5.1-dev \
           liblua5.1-0-dev
-
         sudo sed -i "s,# deb-src,deb-src,g" /etc/apt/sources.list
         sudo apt-get build-dep bullet
         BUILD_BULLET=true
+    ;;
+
+    "arch" | "parabola" | "manjarolinux" )
+        echo -e "You seem to be running either Arch Linux, Parabola GNU/Linux-libre or Manjaro"
+        sudo pacman -Sy --needed unzip \
+          wget \
+          git \
+          cmake \
+          boost \
+          openal \
+          openscenegraph \
+          mygui \
+          bullet \
+          qt5-base \
+          ffmpeg \
+          sdl2 \
+          unshield \
+          libxkbcommon-x11 \
+          ncurses \
+          luajit
+        if [ ! -d "/usr/share/licenses/gcc-libs-multilib/" ]; then
+              sudo pacman -S --needed gcc-libs
+        fi
     ;;
 
     "ubuntu" | "linuxmint" | "elementary" )
@@ -411,7 +404,6 @@ if [ $INSTALL ]; then
         echo -e "
 The OpenMW PPA repository needs to be enabled
 https://wiki.openmw.org/index.php?title=Development_Environment_Setup#Ubuntu
-
 Type YES if you want the script to do it automatically
 If you already have it enabled or want to do it manually,
 press ENTER to continue"
@@ -463,11 +455,9 @@ press ENTER to continue"
         echo -e "
 Fedora users are required to enable the RPMFusion FREE and NON-FREE repositories
 https://wiki.openmw.org/index.php?title=Development_Environment_Setup#Fedora_Workstation
-
 Type YES if you want the script to do it automatically
 If you already have it enabled or want to do it manually,
-press ENTER to continue
-"
+press ENTER to continue"
         read INPUT
         if [ "$INPUT" == "YES" ]; then
               echo -e "\nEnabling RPMFusion..."
@@ -508,6 +498,7 @@ press ENTER to continue
         echo -e "Your GNU/Linux distro is not supported yet, press ENTER to continue without installing dependency packages"
         read
     ;;
+
   esac
   fi
 

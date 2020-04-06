@@ -48,23 +48,23 @@ SCRIPT_DIR="$(dirname $(readlink -f $0))"
 
 echo -e "$HEADERTEXT"
 
-#RUN IN CONTAINER
+# Run in container
 function run_in_container() {
 
-  #CHECK IF DOCKER IS INSTALLED
+  # Check if Docker is installed
   if ! which docker 2>&1 >/dev/null; then
     echo -e "Please install Docker before proceeding."
     exit 1
   fi
 
-  #CLEAN SCRIPT ARGUMENTS
+  # Clean script arguments
   SCRIPT_ARGUMENTS=$(echo "$@" | sed 's/-C//;s/--container//')
 
-  #DEFAULTS
+  # Defaults
   CONTAINER_FOLDER_NAME="container"
   CONTAINER_DEFAULT_ARGS="--skip-pkgs --cmake-local"
 
-  #DETERMINE FORGE IMAGE
+  # Determine Forge image
   case $CONTAINER_ARCHITECTURE in
     armhf )
       CONTAINER_IMAGE="grimkriegor/tes3mp-forge-armhf:latest"
@@ -77,17 +77,17 @@ function run_in_container() {
     ;;
   esac
 
-  #PULL OR UPDATE FORGE IMAGE
+  # Pull or update Forge image
   $(which docker) pull "$CONTAINER_IMAGE"
 
-  #REGISTER QEMU EXECUTABLES IF CONTAINER IS EMULATED
+  # Register qemu executables if container is emulated
   if [ $CONTAINER_IS_EMULATED ]; then
     $(which docker) run --rm --privileged \
       multiarch/qemu-user-static:register --reset
     echo -e "\nEmulating $CONTAINER_ARCHITECTURE on $(uname -m)"
   fi
 
-  #RUN THROUGH CONTAINER
+  # Run through container
   echo -e "\n[!] Now running inside the TES3MP-forge container [!]\n"
   eval $(which docker) run --rm -it \
     -v "$SCRIPT_DIR/tes3mp-deploy.sh":"/deploy/tes3mp-deploy.sh" \
@@ -98,7 +98,7 @@ function run_in_container() {
   exit 0
 }
 
-#PARSE ARGUMENTS
+# Parse arguments
 SCRIPT_ARGS="$@"
 if [ $# -eq 0 ]; then
   echo -e "$HELPTEXT"
@@ -109,51 +109,51 @@ else
   while [ $# -ne 0 ]; do
     case $1 in
 
-    #HELP TEXT
+    # Help text
     -h | --help )
       echo -e "$HELPTEXT"
       exit 1
     ;;
 
-    #INSTALL DEPENDENCIES AND BUILD TES3MP
+    # Install dependencies and build TES3MP
     -i | --install )
       INSTALL=true
       REBUILD=true
     ;;
 
-    #CHECK IF THERE ARE UPDATES, PROMPT TO REBUILD IF SO
+    # Check if there are updates, prompt to rebuild if so
     -u | --upgrade )
       UPGRADE=true
     ;;
 
-    #UPGRADE AUTOMATICALLY IF THERE ARE CHANGES IN THE UPSTREAM CODE
+    # Upgrade automatically if there are changes in the upstream code
     -a | --auto-upgrade )
       UPGRADE=true
       AUTO_UPGRADE=true
     ;;
 
-    #REBUILD TES3MP
+    # Rebuild tes3mp
     -r | --rebuild )
       REBUILD=true
     ;;
 
-    #UPGRADE THE SCRIPT
+    # Upgrade the script
     -y | --script-upgrade )
       SCRIPT_UPGRADE=true
     ;;
 
-    #MAKE PACKAGE
+    # Make package
     -p | --make-package )
       MAKE_PACKAGE=true
     ;;
 
-    #DEFINE INSTALLATION AS SERVER ONLY
+    # Define installation as server only
     -s | --server-only )
       SERVER_ONLY=true
       touch .serveronly
     ;;
 
-    #BUILD SPECIFIC COMMIT
+    # Build specific commit
     -v | --version | --branch | --commit )
       if [[ "$2" =~ ^-.* || "$2" == "" ]]; then
         echo -e "\nYou must specify a valid commit hash or branch name"
@@ -165,7 +165,7 @@ else
       fi
     ;;
 
-    #CUSTOM VERSION STRING FOR COMPATIBILITY
+    # Custom version string for compatibility
     -V | --version-string )
       if [[ "$2" =~ ^-.* || "$2" == "" ]]; then
         echo -e "\nYou must specify a valid version string"
@@ -177,7 +177,7 @@ else
       fi
     ;;
 
-    #NUMBER OF CPU THREADS TO USE IN COMPILATION
+    # Number of CPU threads to use in compilation
     -c | --cores )
       if [[ "$2" =~ ^-.* || "$2" == "" ]]; then
         ARG_CORES=""
@@ -187,13 +187,13 @@ else
       fi
     ;;
 
-    #BUILD MASTER SERVER
+    # Build master server
     -m | --build-master )
       BUILD_MASTER=true
       touch .buildmaster
     ;;
 
-    #RUN IN CONTAINER
+    # Run in container
     -C | --container )
       if [[ "$2" =~ ^-.* || "$2" =~ "" ]]; then
         CONTAINER_ARCHITECTURE="$2"
@@ -202,27 +202,27 @@ else
       RUN_IN_CONTAINER=true
     ;;
 
-    #BUILD WITH DEBUG SYMBOLS
+    # Build with debug symbols
     --debug-symbols )
       DEBUG_SYMBOLS=true
     ;;
 
-    #SKIP PACKAGE INSTALLATION
+    # Skip package installation
     --skip-pkgs )
       SKIP_PACKAGE_INSTALL=true
     ;;
 
-    #TELL CMAKE TO LOOK FOR DEPENDENCIES ON /USR/LOCAL/
+    # Tell cmake to look for dependencies on /usr/local/
     --cmake-local )
       CMAKE_LOCAL=true
     ;;
 
-    #HANDLE CORESCRIPTS
+    # Handle CoreScripts
     --handle-corescripts )
       HANDLE_CORESCRIPTS=true
     ;;
 
-    #HANDLE VERSION FILE
+    # Handle version file
     --handle-version-file )
       HANDLE_VERSION_FILE=true
     ;;
@@ -233,28 +233,28 @@ else
 
 fi
 
-#RUN IN CONTAINER
+# Run in container
 if [ $RUN_IN_CONTAINER ]; then
   run_in_container "$SCRIPT_ARGS"
 fi
 
-#EXIT IF NO OPERATION IS SPECIFIED
+# Exit if no operation is specified
 if [[ ! $INSTALL && ! $UPGRADE && ! $REBUILD && ! $SCRIPT_UPGRADE && ! $MAKE_PACKAGE ]]; then
   echo -e "\nNo operation specified, exiting."
   exit 1
 fi
 
-#NUMBER OF CPU CORES USED FOR COMPILATION
+# Number of CPU cores used for compilation
 if [[ "$ARG_CORES" == "" || "$ARG_CORES" == "0" ]]; then
     CORES="$(cat /proc/cpuinfo | awk '/^processor/{print $3}' | wc -l)"
 else
     CORES="$ARG_CORES"
 fi
 
-#DISTRO IDENTIFICATION
+# Distro identification
 DISTRO="$(lsb_release -si | awk '{print tolower($0)}')"
 
-#FOLDER HIERARCHY
+# Folder hierarchy
 BASE="$(pwd)"
 SCRIPT_BASE="$(dirname $0)"
 CODE="$BASE/code"
@@ -264,22 +264,22 @@ DEPENDENCIES="$BASE/dependencies"
 PACKAGE_TMP="$BASE/package"
 EXTRA="$BASE/extra"
 
-#DEPENDENCY LOCATIONS
+# Dependency locations
 RAKNET_LOCATION="$DEPENDENCIES"/raknet
 OSG_LOCATION="$DEPENDENCIES"/osg
 BULLET_LOCATION="$DEPENDENCIES"/bullet
 
-#CHECK IF THIS IS A SERVER ONLY INSTALL
+# Check if this is a server only install
 if [ -f "$BASE"/.serveronly ]; then
   SERVER_ONLY=true
 fi
 
-#CHECK IF MASTER SERVER IS SUPPOSED TO BE BUILT
+# Check if master server is supposed to be built
 if [ -f "$BASE"/.buildmaster ]; then
   BUILD_MASTER=true
 fi
 
-#CHECK IF THERE IS A PERSISTENT VERSION FILE
+# Check if there is a persistent version file
 if [ -f "$KEEPERS"/version ]; then
   HANDLE_VERSION_FILE=true
 fi
@@ -289,7 +289,7 @@ if [ $CMAKE_LOCAL ]; then
   export LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:"$LD_LIBRARY_PATH"
 fi
 
-#UPGRADE THE TES3MP-DEPLOY SCRIPT
+# Upgrade the TES3MP-deploy script
 if [ $SCRIPT_UPGRADE ]; then
 
   SCRIPT_OLD_VERSION=$(cat "$SCRIPT_BASE"/tes3mp-deploy.sh | grep ^VERSION= | cut -d'"' -f2)
@@ -326,14 +326,14 @@ if [ $SCRIPT_UPGRADE ]; then
 
 fi
 
-#INSTALL MODE
+# Install mode
 if [ $INSTALL ]; then
 
-  #CREATE FOLDER HIERARCHY
+  # Create folder hierarchy
   echo -e ">> Creating folder hierarchy"
   mkdir -p "$DEVELOPMENT" "$KEEPERS" "$DEPENDENCIES"
 
-  #CHECK DISTRO AND INSTALL DEPENDENCIES
+  # Check distro and install dependencies
   if [ ! $SKIP_PACKAGE_INSTALL ]; then
   echo -e "\n>> Checking which GNU/Linux distro is installed"
   case $DISTRO in
@@ -502,7 +502,7 @@ press ENTER to continue"
   esac
   fi
 
-  #CHECK IF GCC HAS C++14 SUPPORT, DISPLAY A MESSAGE AND ABORT OTHERWISE
+  # Check if GCC has C++14 support, display a message and abort otherwise
   echo -e "\n>> Checking if the compiler has the necessary features"
   GCCVERSION=$(gcc -dumpversion)
   GCCVERSION_F=$(echo $GCCVERSION | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/')
@@ -518,18 +518,18 @@ Proceed at your own risk."
     exit 1
   fi
 
-  #AVOID SOME DEPENDENCIES ON SERVER ONLY MODE
+  # Avoid some dependencies on server only mode
   if [ $SERVER_ONLY ]; then
     BUILD_OSG=""
     BUILD_BULLET=""
   fi
 
-  #TRUNCATE TARGET_COMMIT WHEN IT POINTS TO STABLE
+  # Truncate target_commit when it points to stable
   if [ "$TARGET_COMMIT" == "stable" ]; then
     TARGET_COMMIT="$TES3MP_STABLE_VERSION"
   fi
 
-  #PULL SOFTWARE VIA GIT
+  # Pull software via git
   echo -e "\n>> Downloading software"
   ! [ -e "$CODE" ] && git clone -b "${TARGET_COMMIT:-master}" https://github.com/TES3MP/openmw-tes3mp.git "$CODE"
   if [ $BUILD_OSG ] && ! [ -e "$DEPENDENCIES"/osg ] ; then git clone -b 3.4 https://github.com/OpenMW/osg.git "$DEPENDENCIES"/osg --depth 1; fi
@@ -537,19 +537,19 @@ Proceed at your own risk."
   ! [ -e "$DEPENDENCIES"/raknet ] && git clone https://github.com/TES3MP/CrabNet "$DEPENDENCIES"/raknet
   ! [ -e "$KEEPERS"/CoreScripts ] && git clone -b "${TARGET_COMMIT:-master}" https://github.com/TES3MP/CoreScripts.git "$KEEPERS"/CoreScripts
 
-  #COPY STATIC SERVER AND CLIENT CONFIGS
+  # Copy static server and client configs
   echo -e "\n>> Copying server and client configs to their permanent place"
   cp "$CODE"/files/tes3mp/tes3mp-{client,server}-default.cfg "$KEEPERS"
 
-  #SET home VARIABLE IN tes3mp-server-default.cfg
+  # Set home variable in tes3mp-server-default.cfg
   echo -e "\n>> Autoconfiguring"
   sed -i "s|home = .*|home = $KEEPERS/CoreScripts|g" "${KEEPERS}"/tes3mp-server-default.cfg
 
-  #DIRTY HACKS
+  # Dirty hacks
   echo -e "\n>> Applying some dirty hacks"
   sed -i "s|tes3mp.lua,chat_parser.lua|server.lua|g" "${KEEPERS}"/tes3mp-server-default.cfg #Fixes server scripts
 
-  #BUILD OPENSCENEGRAPH
+  # Build openscenegraph
   if [ $BUILD_OSG ]; then
       echo -e "\n>> Building OpenSceneGraph"
       mkdir -p "$DEPENDENCIES"/osg/build
@@ -561,7 +561,7 @@ Proceed at your own risk."
       cd "$BASE"
   fi
 
-  #BUILD BULLET
+  # Build bullet
   if [ $BUILD_BULLET ]; then
       echo -e "\n>> Building Bullet Physics"
       mkdir -p "$DEPENDENCIES"/bullet/build
@@ -574,7 +574,7 @@ Proceed at your own risk."
       cd "$BASE"
   fi
 
-  #BUILD RAKNET
+  # Build RakNet
   echo -e "\n>> Building RakNet"
   cd "$DEPENDENCIES"/raknet
   git checkout 4eeeaad2f6c11aeb82070df35169694b4fb7b04b
@@ -590,29 +590,29 @@ Proceed at your own risk."
 
   cd "$BASE"
 
-  #BUILD THE STABLE BRANCH IF NO TARGET COMMIT IS SPECIFIED
+  # Build the stable branch if no target commit is specified
   if [ ! $BUILD_COMMIT ]; then
     echo -e "\n>> Switching to the STABLE branch."
     BUILD_COMMIT=true
     TARGET_COMMIT="stable"
 
-    #SWITCH TO THE STABLE BRANCH ON CORESCRIPTS AS WELL
+    # Switch to the stable branch on CoreScripts as well
     cd "$KEEPERS"/CoreScripts
     git stash
     git pull
     git checkout "$TES3MP_STABLE_VERSION"
     cd "$BASE"
 
-    #HANDLE VERSION FILE
+    # Handle version file
     HANDLE_VERSION_FILE=true
   fi
 
 fi
 
-#CHECK THE REMOTE REPOSITORY FOR CHANGES
+# Check the remote repository for changes
 if [ $UPGRADE ]; then
 
-  #CHECK IF THERE ARE CHANGES IN THE GIT REMOTE
+  # Check if there are changes in the git remote
   echo -e "\n>> Checking the git repository for changes"
   cd "$CODE"
   git remote update
@@ -624,7 +624,7 @@ if [ $UPGRADE ]; then
   fi
   cd "$BASE"
 
-  #CHECK IF THERE ARE CHANGES IN THE CORESCRIPTS GIT REMOTE
+  # Check if there are changes in the CoreScripts git remote
   if [ $HANDLE_CORESCRIPTS ]; then
     echo -e "\n>> Checking the CoreScripts git repository for changes"
     cd "$KEEPERS"/CoreScripts
@@ -638,7 +638,7 @@ if [ $UPGRADE ]; then
     cd "$BASE"
   fi
 
-  #AUTOMATICALLY UPGRADE IF THERE ARE GIT CHANGES
+  # Automatically upgrade if there are git changes
   if [ $AUTO_UPGRADE ]; then
     if [ $GIT_CHANGES ]; then
       REBUILD="YES"
@@ -667,7 +667,7 @@ if [ $UPGRADE ]; then
   fi
 fi
 
-#CORESCRIPTS HANDLING (Hack, please make me more elegant later :( )
+# CoreScripts handling (hack, please make me more elegant later :( )
 if [ $HANDLE_CORESCRIPTS ]; then
   if [ $UPGRADE ]; then
     echo -e "\n>> Pulling CoreScripts code changes from git"
@@ -700,10 +700,10 @@ if [ $HANDLE_CORESCRIPTS ]; then
 
 fi
 
-#REBUILD TES3MP
+# Rebuild TES3MP
 if [ $REBUILD ]; then
 
-  #CHECK WHICH DEPENDENCIES ARE PRESENT
+  # Check which dependencies are present
   if [ -d "$DEPENDENCIES"/osg ]; then
     BUILD_OSG=true
   fi
@@ -711,7 +711,7 @@ if [ $REBUILD ]; then
     BUILD_BULLET=true
   fi
 
-  #SWITCH TO A SPECIFIC COMMIT
+  # Switch to a specific commit
   if [ $BUILD_COMMIT ]; then
     cd "$CODE"
     if [[ "$TARGET_COMMIT" == "" || "$TARGET_COMMIT" == "latest" ]]; then
@@ -742,7 +742,7 @@ if [ $REBUILD ]; then
 
   fi
 
-  #CHANGE VERSION STRING
+  # Change version string
   if [ $CHANGE_VERSION_STRING ]; then
     cd "$CODE"
 
@@ -761,7 +761,7 @@ if [ $REBUILD ]; then
     cd "$BASE"
   fi
 
-    #PULL CODE CHANGES FROM THE GIT REPOSITORY
+    # Pull code changes from the git repository
   if [ "$UPGRADE" == "YES" ]; then
     echo -e "\n>> Pulling code changes from git"
     cd "$CODE"
@@ -858,7 +858,7 @@ if [ $REBUILD ]; then
 
   cd "$BASE"
 
-  #CREATE SYMLINKS FOR THE CONFIG FILES INSIDE THE NEW BUILD FOLDER
+  # Create symlinks for the config files inside the new build folder
   echo -e "\n>> Creating symlinks of the config files in the build folder"
   for file in "$KEEPERS"/*.cfg
   do
@@ -868,11 +868,11 @@ if [ $REBUILD ]; then
     ln -sf "../keepers/$FILENAME" "$DEVELOPMENT/"
   done
 
-  #CREATE SYMLINKS FOR RESOURCES INSIDE THE CONFIG FOLDER
+  # Create symlinks for resources inside the config folder
   echo -e "\n>> Creating symlinks for resources inside the config folder"
   ln -sf ../"$(basename $DEVELOPMENT)"/resources "$KEEPERS"/resources 2> /dev/null
 
-  #CREATE USEFUL SHORTCUTS ON THE BASE DIRECTORY
+  # Create useful shortcuts on the base directory
   echo -e "\n>> Creating useful shortcuts on the base directory"
   if [ $SERVER_ONLY ]; then
     SHORTCUTS=( "tes3mp-server" )
@@ -884,24 +884,24 @@ if [ $REBUILD ]; then
     chmod +x "$i".sh
   done
 
-  #HANDLE VERSION FILE
+  # Handle version file
   if [ $HANDLE_VERSION_FILE ]; then
     echo -e "\n>> Linking persistent version file"
     rm "$DEVELOPMENT"/resources/version
     ln -sf "$KEEPERS"/version "$DEVELOPMENT"/resources/version
   fi
 
-  #COPY CREDITATION FILES
+  # Copy creditation files
   echo -e "\n>> Copying creditation files"
   cp "$CODE"/AUTHORS.md "$DEVELOPMENT"
   cp "$CODE"/tes3mp-credits.md "$DEVELOPMENT"
 
-  #ALL DONE
+  # All done
   echo -e "\n\n\nAll done! Press any key to exit.\nMay Vehk bestow his blessing upon your Muatra."
 
 fi
 
-#MAKE PORTABLE PACKAGE
+# Make portable package
 if [ $MAKE_PACKAGE ]; then
   echo -e "\n>> Creating TES3MP package"
 
@@ -969,16 +969,16 @@ if [ $MAKE_PACKAGE ]; then
     "liblua5.1.so" \
   )
 
-  #EXIT IF TES3MP hasn't been compiled yet
+  # Exit if tes3mp hasn't been compiled yet
   if [[ ! -f "$DEVELOPMENT"/tes3mp && ! -f "$DEVELOPMENT"/tes3mp-server ]]; then
     echo -e "\nTES3MP has to be built before packaging"
     exit 1
   fi
 
-  #COPY THE ENTIRE BUILD FOLDER FOR PACKAGING
+  # Copy the entire build folder for packaging
   cp -r "$DEVELOPMENT" "$PACKAGE_TMP"
 
-  #COPY THE PERSISTENT VERSION FILE AS WELL
+  # Copy the persistent version file as well
   if [ $HANDLE_VERSION_FILE ]; then
     rm -f "$PACKAGE_TMP"/resources/version
     cp -fn "$KEEPERS"/version "$PACKAGE_TMP"/resources/version
@@ -986,7 +986,7 @@ if [ $MAKE_PACKAGE ]; then
 
   cd "$PACKAGE_TMP"
 
-  #CLEANUP UNNEEDED FILES
+  # Cleanup unneeded files
   echo -e "\nCleaning up unneeded files"
   find "$PACKAGE_TMP" -type d -name "CMakeFiles" -exec rm -rf "{}" \; || true
   #find "$PACKAGE_TMP" -type d -name ".git" -exec rm -rf "{}" \; || true
@@ -995,19 +995,19 @@ if [ $MAKE_PACKAGE ]; then
   rm -f "$PACKAGE_TMP"/{*.bkp,*.desktop,*.xml}
   rm -rf "$PACKAGE_TMP"/{apps,components,docs,extern,files}
 
-  #COPY USEFUL FILES
+  # Copy useful files
   echo -e "\nCopying useful files"
   cp -r "$KEEPERS"/CoreScripts "$PACKAGE_TMP"/server
   cp -r "$KEEPERS"/*.cfg "$PACKAGE_TMP"
   sed -i "s|home = .*|home = ./server|g" "$PACKAGE_TMP"/tes3mp-server-default.cfg
 
-  #COPY WHATEVER EXTRA FILES ARE CURRENTLY PRESENT
+  # Copy whatever extra files are currently present
   if [ -d "$EXTRA" ]; then
     echo -e "\nCopying some extra files"
     cp -rf --preserve=links "$EXTRA"/* "$PACKAGE_TMP"/
   fi
 
-  #LIST AND COPY ALL LIBS
+  # List and copy all libs
   mkdir -p lib
   echo -e "\nCopying needed libraries"
 
@@ -1019,7 +1019,7 @@ if [ $MAKE_PACKAGE ]; then
     echo -ne "$LIB\033[0K\r"
   done
 
-  #MAKE SURE ALL SYMLINKS ARE RELATIVE
+  # Make sure all symlinks are relative
   echo -e "\nMaking sure all symlinks are relative"
   find ./lib -type l | while read LINK; do
     LINK_BASENAME="$(basename $LINK)"
@@ -1029,7 +1029,7 @@ if [ $MAKE_PACKAGE ]; then
     echo -ne "$LINK\033[0K\r"
   done
 
-  #PACKAGE INFO
+  # Package info
 
   PACKAGE_PREFIX="tes3mp"
   if [ $SERVER_ONLY ]; then
@@ -1048,7 +1048,7 @@ if [ $MAKE_PACKAGE ]; then
 
   echo -e "TES3MP $PACKAGE_VERSION ($PACKAGE_COMMIT $PACKAGE_COMMIT_SCRIPTS) built on $PACKAGE_SYSTEM $PACKAGE_ARCH ($PACKAGE_DISTRO) on $PACKAGE_DATE by $USER ($HOSTNAME)" > "$PACKAGE_TMP"/tes3mp-package-info.txt
 
-  #CREATE PRE-LAUNCH SCRIPT
+  # Create pre-launch script
   cat << 'EOF' > tes3mp-prelaunch
 #!/bin/bash
 
@@ -1091,7 +1091,7 @@ else
 fi
 EOF
 
-  #CREATE WRAPPERS
+  # Create wrappers
   echo -e "\n\nCreating wrappers"
   for BINARY in "${PACKAGE_BINARIES[@]}"; do
     if [ ! -f "$BINARY" ]; then
@@ -1105,7 +1105,7 @@ EOF
   done
   chmod 755 *
 
-  #CREATE ARCHIVE
+  # Create archive
   echo -e "\nCreating archive"
 
   PACKAGE_FOLDER="TES3MP"
@@ -1115,10 +1115,10 @@ EOF
   PACKAGE_TMP="$BASE"/"$PACKAGE_FOLDER"
   tar cvzf "$BASE"/package.tar.gz --directory="$BASE" "$PACKAGE_FOLDER"/
 
-  #RENAME ARCHIVE
+  # Rename archive
   mv "$BASE"/package.tar.gz "$BASE"/"$PACKAGE_NAME".tar.gz
 
-  #CLEANUP TEMPORARY FOLDER AND FINISH
+  # Cleanup temporary folder and finish
   rm -rf "$PACKAGE_TMP"
   echo -e "\n>> Package created as \"$PACKAGE_NAME\""
 

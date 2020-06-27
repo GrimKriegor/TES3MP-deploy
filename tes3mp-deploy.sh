@@ -73,7 +73,7 @@ function run_in_container() {
       CONTAINER_DEFAULT_ARGS=$(echo $CONTAINER_DEFAULT_ARGS | sed 's/--cmake-local//')
     ;;
     * )
-      CONTAINER_IMAGE="grimkriegor/tes3mp-forge:latest"
+      CONTAINER_IMAGE="grimkriegor/tes3mp-forge:1.1.0"
     ;;
   esac
 

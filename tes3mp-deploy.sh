@@ -73,7 +73,7 @@ function run_in_container() {
       CONTAINER_DEFAULT_ARGS=$(echo $CONTAINER_DEFAULT_ARGS | sed 's/--cmake-local//')
     ;;
     * )
-      CONTAINER_IMAGE="grimkriegor/tes3mp-forge:1.1.0"
+      CONTAINER_IMAGE="grimkriegor/tes3mp-forge:2.1.0"
     ;;
   esac
 
@@ -348,11 +348,13 @@ if [ $INSTALL ]; then
           cmake \
           libopenal-dev \
           qt5-default \
+          qtbase5-dev \
+          qtbase5-dev-tools \
+          qttools5-dev-tools \
           libqt5opengl5-dev \
           libopenthreads-dev \
           libopenscenegraph-3.4-dev \
           libsdl2-dev \
-          libqt4-dev \
           libboost-filesystem-dev \
           libboost-thread-dev \
           libboost-program-options-dev \
@@ -366,9 +368,9 @@ if [ $INSTALL ]; then
           libunshield-dev \
           cmake \
           build-essential \
-          libqt4-opengl-dev \
           g++ \
           libncurses5-dev \
+          luajit \
           libluajit-5.1-dev \
           liblua5.1-0-dev
         sudo sed -i "s,# deb-src,deb-src,g" /etc/apt/sources.list
@@ -421,11 +423,13 @@ press ENTER to continue"
           cmake \
           libopenal-dev \
           qt5-default \
+          qtbase5-dev \
+          qtbase5-dev-tools \
+          qttools5-dev-tools \
           libqt5opengl5-dev \
           libopenthreads-dev \
           libopenscenegraph-3.4-dev \
           libsdl2-dev \
-          libqt4-dev \
           libboost-filesystem-dev \
           libboost-thread-dev \
           libboost-program-options-dev \
@@ -439,7 +443,6 @@ press ENTER to continue"
           libunshield-dev \
           cmake \
           build-essential \
-          libqt4-opengl-dev \
           g++ \
           libncurses5-dev \
           luajit \
@@ -566,7 +569,7 @@ Proceed at your own risk."
       echo -e "\n>> Building Bullet Physics"
       mkdir -p "$DEPENDENCIES"/bullet/build
       cd "$DEPENDENCIES"/bullet/build
-      git checkout tags/2.86
+      git checkout tags/2.87
       rm -f CMakeCache.txt
       cmake -DCMAKE_INSTALL_PREFIX="$DEPENDENCIES"/bullet/install -DBUILD_SHARED_LIBS=1 -DINSTALL_LIBS=1 -DINSTALL_EXTRA_LIBS=1 -DCMAKE_BUILD_TYPE=Release ..
       make -j$CORES

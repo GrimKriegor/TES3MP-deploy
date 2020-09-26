@@ -434,6 +434,7 @@ press ENTER to continue"
           libboost-thread-dev \
           libboost-program-options-dev \
           libboost-system-dev \
+          libbullet-dev \
           libavcodec-dev \
           libavformat-dev \
           libavutil-dev \

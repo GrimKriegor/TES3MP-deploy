@@ -253,6 +253,7 @@ fi
 
 # Distro identification
 DISTRO="$(lsb_release -si | awk '{print tolower($0)}')"
+DISTROCODE="$(lsb_release -sc | awk '{print tolower($0)}')"
 
 # Folder hierarchy
 BASE="$(pwd)"
@@ -373,9 +374,12 @@ if [ $INSTALL ]; then
           luajit \
           libluajit-5.1-dev \
           liblua5.1-0-dev
-        sudo sed -i "s,# deb-src,deb-src,g" /etc/apt/sources.list
-        sudo apt-get build-dep bullet
-        BUILD_BULLET=true
+        if [ $DISTROCODE == "stretch" ]; then
+               sudo apt-get -y install libbullet-dev/stretch-backports
+        else
+               sudo apt-get -y install libbullet-dev
+        fi       
+        sudo sed -i "s_# deb-src_deb-src_g" /etc/apt/sources.list
     ;;
 
     "arch" | "parabola" | "manjarolinux" )
@@ -449,9 +453,7 @@ press ENTER to continue"
           luajit \
           libluajit-5.1-dev \
           liblua5.1-0-dev
-        sudo sed -i "s,# deb-src,deb-src,g" /etc/apt/sources.list
-        sudo apt-get build-dep bullet
-        BUILD_BULLET=true
+        sudo sed -i "s_# deb-src_deb-src_g" /etc/apt/sources.list
     ;;
 
     "fedora" )
@@ -495,7 +497,6 @@ press ENTER to continue"
           ncurses-c++-libs \
           ncurses-devel \
           luajit-devel
-        BUILD_BULLET=true
     ;;
 
     *)

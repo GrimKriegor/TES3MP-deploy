@@ -354,7 +354,7 @@ if [ $INSTALL ]; then
           qttools5-dev-tools \
           libqt5opengl5-dev \
           libopenthreads-dev \
-          libopenscenegraph-3.4-dev \
+          libopenscenegraph-dev \
           libsdl2-dev \
           libboost-filesystem-dev \
           libboost-thread-dev \
@@ -432,7 +432,7 @@ press ENTER to continue"
           qttools5-dev-tools \
           libqt5opengl5-dev \
           libopenthreads-dev \
-          libopenscenegraph-3.4-dev \
+          libopenscenegraph-dev \
           libsdl2-dev \
           libboost-filesystem-dev \
           libboost-thread-dev \

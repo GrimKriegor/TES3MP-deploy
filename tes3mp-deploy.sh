@@ -4,7 +4,7 @@ set -e
 
 VERSION="2.18.0"
 
-TES3MP_STABLE_VERSION="0.7.0"
+TES3MP_STABLE_VERSION="0.7.1"
 TES3MP_STABLE_VERSION_FILE="0.44.0\n292536439eeda58becdb7e441fe2e61ebb74529e"
 
 HEADERTEXT="\
@@ -73,7 +73,7 @@ function run_in_container() {
       CONTAINER_DEFAULT_ARGS=$(echo $CONTAINER_DEFAULT_ARGS | sed 's/--cmake-local//')
     ;;
     * )
-      CONTAINER_IMAGE="grimkriegor/tes3mp-forge:2.1.0"
+      CONTAINER_IMAGE="grimkriegor/tes3mp-forge:2.3.0"
     ;;
   esac
 
@@ -851,9 +851,7 @@ if [ $REBUILD ]; then
 
   if [ $CMAKE_LOCAL ]; then
     CMAKE_PARAMS="$CMAKE_PARAMS \
-      -DCMAKE_LIBRARY_PATH=/usr/local/lib64 \
-      -DBOOST_ROOT=/usr/local \
-      -DBoost_NO_SYSTEM_PATHS=ON"
+      -DCMAKE_LIBRARY_PATH=/usr/local/lib64"
   fi
 
   echo -e "\n\n$CMAKE_PARAMS\n\n"

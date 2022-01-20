@@ -924,10 +924,11 @@ if [ $MAKE_PACKAGE ]; then
     "libavcodec.so" \
     "libavformat.so" \
     "libavutil.so" \
+    "libboost_thread.so" \
+    "libboost_system.so" \
     "libboost_filesystem.so" \
     "libboost_program_options.so" \
-    "libboost_system.so" \
-    "libboost_thread.so" \
+    "libboost_iostreams.so" \
     "libBulletCollision.so" \
     "libbz2.so" \
     "libLinearMath.so" \
@@ -969,6 +970,7 @@ if [ $MAKE_PACKAGE ]; then
     "libboost_system.so" \
     "libboost_filesystem.so" \
     "libboost_program_options.so" \
+    "libboost_iostreams.so" \
     "liblua5.1.so" \
   )
 

@@ -89,6 +89,7 @@ function run_in_container() {
 
   # Run through container
   echo -e "\n[!] Now running inside the TES3MP-forge container [!]\n"
+  mkdir -p "$SCRIPT_DIR/$CONTAINER_FOLDER_NAME"
   eval $(which docker) run --rm -it \
     -v "$SCRIPT_DIR/tes3mp-deploy.sh":"/deploy/tes3mp-deploy.sh" \
     -v "$SCRIPT_DIR/$CONTAINER_FOLDER_NAME":"/build" \
@@ -945,6 +946,7 @@ if [ $MAKE_PACKAGE ]; then
     "libosgUtil.so" \
     "libosgViewer.so" \
     "libosgWidget.so" \
+    "libosgShadow.so" \
     "libSDL2" \
     "libswresample.so" \
     "libswscale.so" \
@@ -952,6 +954,7 @@ if [ $MAKE_PACKAGE ]; then
     "libtxc_dxtn.so" \
     "libunshield.so" \
     "libuuid.so" \
+    "libsndio.so" \
     "osgPlugins" \
   )
 

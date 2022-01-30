@@ -955,6 +955,15 @@ if [ $MAKE_PACKAGE ]; then
     "libunshield.so" \
     "libuuid.so" \
     "libsndio.so" \
+    "libvpx.so" \
+    "libwebp.so" \
+    "libcrystalhd.so" \
+    "libaom.so" \
+    "libcodec2.so" \
+    "libshine.so" \
+    "libx264.so" \
+    "libx265.so" \
+    "libssh-gcrypt.so" \
     "osgPlugins" \
   )
 

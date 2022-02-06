@@ -537,7 +537,7 @@ Proceed at your own risk."
 
   # Pull software via git
   echo -e "\n>> Downloading software"
-  ! [ -e "$CODE" ] && git clone -b "${TARGET_COMMIT:-master}" https://github.com/TES3MP/openmw-tes3mp.git "$CODE"
+  ! [ -e "$CODE" ] && git clone -b "${TARGET_COMMIT:-master}" https://github.com/TES3MP/TES3MP.git "$CODE"
   if [ $BUILD_OSG ] && ! [ -e "$DEPENDENCIES"/osg ] ; then git clone -b 3.4 https://github.com/OpenMW/osg.git "$DEPENDENCIES"/osg --depth 1; fi
   if [ $BUILD_BULLET ] && ! [ -e "$DEPENDENCIES"/bullet ]; then git clone https://github.com/bulletphysics/bullet3.git "$DEPENDENCIES"/bullet; fi # cannot --depth 1 because we check out specific revision
   ! [ -e "$DEPENDENCIES"/raknet ] && git clone https://github.com/TES3MP/CrabNet "$DEPENDENCIES"/raknet

@@ -2,10 +2,10 @@
 
 set -e
 
-VERSION="2.18.0"
+VERSION="2.19.0"
 
-TES3MP_STABLE_VERSION="0.7.1"
-TES3MP_STABLE_VERSION_FILE="0.44.0\n292536439eeda58becdb7e441fe2e61ebb74529e"
+TES3MP_STABLE_VERSION="0.8.0"
+TES3MP_STABLE_VERSION_FILE="0.47.0\n000e8724cacaf0176f6220de111ca45098807e78"
 
 HEADERTEXT="\
 TES3MP-deploy ($VERSION)
@@ -73,7 +73,7 @@ function run_in_container() {
       CONTAINER_DEFAULT_ARGS=$(echo $CONTAINER_DEFAULT_ARGS | sed 's/--cmake-local//')
     ;;
     * )
-      CONTAINER_IMAGE="grimkriegor/tes3mp-forge:2.3.0"
+      CONTAINER_IMAGE="grimkriegor/tes3mp-forge:2.3.1"
     ;;
   esac
 
@@ -89,6 +89,7 @@ function run_in_container() {
 
   # Run through container
   echo -e "\n[!] Now running inside the TES3MP-forge container [!]\n"
+  mkdir -p "$SCRIPT_DIR/$CONTAINER_FOLDER_NAME"
   eval $(which docker) run --rm -it \
     -v "$SCRIPT_DIR/tes3mp-deploy.sh":"/deploy/tes3mp-deploy.sh" \
     -v "$SCRIPT_DIR/$CONTAINER_FOLDER_NAME":"/build" \
@@ -536,7 +537,7 @@ Proceed at your own risk."
 
   # Pull software via git
   echo -e "\n>> Downloading software"
-  ! [ -e "$CODE" ] && git clone -b "${TARGET_COMMIT:-master}" https://github.com/TES3MP/openmw-tes3mp.git "$CODE"
+  ! [ -e "$CODE" ] && git clone -b "${TARGET_COMMIT:-master}" https://github.com/TES3MP/TES3MP.git "$CODE"
   if [ $BUILD_OSG ] && ! [ -e "$DEPENDENCIES"/osg ] ; then git clone -b 3.4 https://github.com/OpenMW/osg.git "$DEPENDENCIES"/osg --depth 1; fi
   if [ $BUILD_BULLET ] && ! [ -e "$DEPENDENCIES"/bullet ]; then git clone https://github.com/bulletphysics/bullet3.git "$DEPENDENCIES"/bullet; fi # cannot --depth 1 because we check out specific revision
   ! [ -e "$DEPENDENCIES"/raknet ] && git clone https://github.com/TES3MP/CrabNet "$DEPENDENCIES"/raknet
@@ -582,7 +583,7 @@ Proceed at your own risk."
   # Build RakNet
   echo -e "\n>> Building RakNet"
   cd "$DEPENDENCIES"/raknet
-  git checkout 4eeeaad2f6c11aeb82070df35169694b4fb7b04b
+  git checkout 19e66190e83f53bcdcbcd6513238ed2e54878a21
 
   mkdir -p "$DEPENDENCIES"/raknet/build
   cd "$DEPENDENCIES"/raknet/build
@@ -924,10 +925,11 @@ if [ $MAKE_PACKAGE ]; then
     "libavcodec.so" \
     "libavformat.so" \
     "libavutil.so" \
+    "libboost_thread.so" \
+    "libboost_system.so" \
     "libboost_filesystem.so" \
     "libboost_program_options.so" \
-    "libboost_system.so" \
-    "libboost_thread.so" \
+    "libboost_iostreams.so" \
     "libBulletCollision.so" \
     "libbz2.so" \
     "libLinearMath.so" \
@@ -944,6 +946,7 @@ if [ $MAKE_PACKAGE ]; then
     "libosgUtil.so" \
     "libosgViewer.so" \
     "libosgWidget.so" \
+    "libosgShadow.so" \
     "libSDL2" \
     "libswresample.so" \
     "libswscale.so" \
@@ -951,6 +954,16 @@ if [ $MAKE_PACKAGE ]; then
     "libtxc_dxtn.so" \
     "libunshield.so" \
     "libuuid.so" \
+    "libsndio.so" \
+    "libvpx.so" \
+    "libwebp.so" \
+    "libcrystalhd.so" \
+    "libaom.so" \
+    "libcodec2.so" \
+    "libshine.so" \
+    "libx264.so" \
+    "libx265.so" \
+    "libssh-gcrypt.so" \
     "osgPlugins" \
   )
 
@@ -969,6 +982,7 @@ if [ $MAKE_PACKAGE ]; then
     "libboost_system.so" \
     "libboost_filesystem.so" \
     "libboost_program_options.so" \
+    "libboost_iostreams.so" \
     "liblua5.1.so" \
   )
 

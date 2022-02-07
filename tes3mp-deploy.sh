@@ -995,6 +995,9 @@ if [ $MAKE_PACKAGE ]; then
   # Copy the entire build folder for packaging
   cp -r "$DEVELOPMENT" "$PACKAGE_TMP"
 
+  # Copy the license file
+  cp -f "$CODE"/LICENSE "$PACKAGE_TMP"/LICENSE
+
   # Copy the persistent version file as well
   if [ $HANDLE_VERSION_FILE ]; then
     rm -f "$PACKAGE_TMP"/resources/version

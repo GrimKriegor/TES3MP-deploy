@@ -1000,6 +1000,13 @@ if [ $MAKE_PACKAGE ]; then
   # Copy the license file
   cp -f "$CODE"/LICENSE "$PACKAGE_TMP"/LICENSE
 
+  # Copy the source code
+  SOURCE_TMP="$BASE/TES3MP"
+  cp -r "$CODE" "$SOURCE_TMP"
+  rm -r "$SOURCE_TMP/.git"
+  tar cvf "$PACKAGE_TMP/source.tar.gz" -C "$BASE" "$(basename $SOURCE_TMP)"
+  rm -r "$SOURCE_TMP"
+
   # Copy the persistent version file as well
   if [ $HANDLE_VERSION_FILE ]; then
     rm -f "$PACKAGE_TMP"/resources/version

@@ -7,13 +7,13 @@ VERSION="2.19.0"
 TES3MP_STABLE_VERSION="0.8.0"
 TES3MP_STABLE_VERSION_FILE="0.47.0\n000e8724cacaf0176f6220de111ca45098807e78"
 
-HEADERTEXT="\
+HELP_TEXT_HEADER="\
 TES3MP-deploy ($VERSION)
 Grim Kriegor <grimkriegor@krutt.org>
 Licensed under the GNU GPLv3 free license
 "
 
-HELPTEXT="\
+HELP_TEXT_BODY="\
 Usage $0 MODE [OPTIONS]
 
 Modes of operation:
@@ -30,7 +30,6 @@ Options:
   -c, --cores N                  Use N cores for building TES3MP and its dependencies
   -v, --version ID               Checkout and build a specific TES3MP commit or branch
   -V, --version-string STRING    Set the version string for compatibility
-  -m, --build-master             Build the master server
   -C, --container [ARCH]         Run inside a container, optionally specify container architecture
 
 Peculiar options:
@@ -46,7 +45,7 @@ https://github.com/GrimKriegor/TES3MP-deploy
 
 SCRIPT_DIR="$(dirname $(readlink -f $0))"
 
-echo -e "$HEADERTEXT"
+echo -e "$HELP_TEXT_HEADER"
 
 # Run in container
 function run_in_container() {
@@ -102,7 +101,7 @@ function run_in_container() {
 # Parse arguments
 SCRIPT_ARGS="$@"
 if [ $# -eq 0 ]; then
-  echo -e "$HELPTEXT"
+  echo -e "$HELP_TEXT_BODY"
   echo -e "No parameter specified."
   exit 1
 
@@ -112,7 +111,7 @@ else
 
     # Help text
     -h | --help )
-      echo -e "$HELPTEXT"
+      echo -e "$HELP_TEXT_BODY"
       exit 1
     ;;
 
@@ -186,12 +185,6 @@ else
         ARG_CORES=$2
         shift
       fi
-    ;;
-
-    # Build master server
-    -m | --build-master )
-      BUILD_MASTER=true
-      touch .buildmaster
     ;;
 
     # Run in container
@@ -272,11 +265,6 @@ RAKNET_LOCATION="$DEPENDENCIES"/raknet
 # Check if this is a server only install
 if [ -f "$BASE"/.serveronly ]; then
   SERVER_ONLY=true
-fi
-
-# Check if master server is supposed to be built
-if [ -f "$BASE"/.buildmaster ]; then
-  BUILD_MASTER=true
 fi
 
 # Check if there is a persistent version file
@@ -748,11 +736,6 @@ if [ $REBUILD ]; then
       -DBUILD_OPENMW=OFF \
       -DBUILD_NIFTEST=OFF \
       -DBUILD_WIZARD=OFF"
-  fi
-
-  if [ $BUILD_MASTER ]; then
-    CMAKE_PARAMS="$CMAKE_PARAMS \
-      -DBUILD_MASTER=ON"
   fi
 
   if [ $DEBUG_SYMBOLS ]; then

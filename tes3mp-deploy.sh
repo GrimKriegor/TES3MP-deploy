@@ -507,22 +507,6 @@ press ENTER to continue"
   esac
   fi
 
-  # Check if GCC has C++14 support, display a message and abort otherwise
-  echo -e "\n>> Checking if the compiler has the necessary features"
-  GCCVERSION=$(gcc -dumpversion)
-  GCCVERSION_F=$(echo $GCCVERSION | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/')
-  GCCVERSION_P=$((${GCCVERSION_F}*(10**(5-${#GCCVERSION_F}))))
-  if [ $GCCVERSION_P -lt 60100 ]; then
-    echo -e "
-TES3MP requires some fairly recent C++ features. \
-Current GCC version is $GCCVERSION. \
-Update GCC to at least version 6.1 to proceed.
-
-Only upgrade your toolchain if you know what you are doing.
-Proceed at your own risk."
-    exit 1
-  fi
-
   # Avoid some dependencies on server only mode
   if [ $SERVER_ONLY ]; then
     BUILD_OSG=""

@@ -33,7 +33,6 @@ Options:
   -C, --container [ARCH]         Run inside a container, optionally specify container architecture
 
 Peculiar options:
-  --debug-symbols                Build with debug symbols
   --skip-pkgs                    Skip package installation
   --cmake-local                  Tell CMake to look in /usr/local/ for libraries
   --handle-corescripts           Handle CoreScripts, pulls and branch switches
@@ -194,11 +193,6 @@ else
         shift
       fi
       RUN_IN_CONTAINER=true
-    ;;
-
-    # Build with debug symbols
-    --debug-symbols )
-      DEBUG_SYMBOLS=true
     ;;
 
     # Skip package installation
@@ -736,11 +730,6 @@ if [ $REBUILD ]; then
       -DBUILD_OPENMW=OFF \
       -DBUILD_NIFTEST=OFF \
       -DBUILD_WIZARD=OFF"
-  fi
-
-  if [ $DEBUG_SYMBOLS ]; then
-    CMAKE_PARAMS="$CMAKE_PARAMS \
-      -DCMAKE_BUILD_TYPE=Debug"
   fi
 
   if [ $CMAKE_LOCAL ]; then

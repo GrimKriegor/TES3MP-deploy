@@ -269,7 +269,6 @@ EXTRA="$BASE/extra"
 # Dependency locations
 RAKNET_LOCATION="$DEPENDENCIES"/raknet
 OSG_LOCATION="$DEPENDENCIES"/osg
-BULLET_LOCATION="$DEPENDENCIES"/bullet
 
 # Check if this is a server only install
 if [ -f "$BASE"/.serveronly ]; then
@@ -379,7 +378,7 @@ if [ $INSTALL ]; then
                sudo apt-get -y install libbullet-dev/stretch-backports
         else
                sudo apt-get -y install libbullet-dev
-        fi       
+        fi
         sudo sed -i "s_# deb-src_deb-src_g" /etc/apt/sources.list
     ;;
 
@@ -527,7 +526,6 @@ Proceed at your own risk."
   # Avoid some dependencies on server only mode
   if [ $SERVER_ONLY ]; then
     BUILD_OSG=""
-    BUILD_BULLET=""
   fi
 
   # Truncate target_commit when it points to stable
@@ -539,7 +537,6 @@ Proceed at your own risk."
   echo -e "\n>> Downloading software"
   ! [ -e "$CODE" ] && git clone -b "${TARGET_COMMIT:-master}" https://github.com/TES3MP/TES3MP.git "$CODE"
   if [ $BUILD_OSG ] && ! [ -e "$DEPENDENCIES"/osg ] ; then git clone -b 3.4 https://github.com/OpenMW/osg.git "$DEPENDENCIES"/osg --depth 1; fi
-  if [ $BUILD_BULLET ] && ! [ -e "$DEPENDENCIES"/bullet ]; then git clone https://github.com/bulletphysics/bullet3.git "$DEPENDENCIES"/bullet; fi # cannot --depth 1 because we check out specific revision
   ! [ -e "$DEPENDENCIES"/raknet ] && git clone https://github.com/TES3MP/CrabNet "$DEPENDENCIES"/raknet
   ! [ -e "$KEEPERS"/CoreScripts ] && git clone -b "${TARGET_COMMIT:-master}" https://github.com/TES3MP/CoreScripts.git "$KEEPERS"/CoreScripts
 
@@ -564,19 +561,6 @@ Proceed at your own risk."
       cmake ..
       make -j$CORES
 
-      cd "$BASE"
-  fi
-
-  # Build bullet
-  if [ $BUILD_BULLET ]; then
-      echo -e "\n>> Building Bullet Physics"
-      mkdir -p "$DEPENDENCIES"/bullet/build
-      cd "$DEPENDENCIES"/bullet/build
-      git checkout tags/2.87
-      rm -f CMakeCache.txt
-      cmake -DCMAKE_INSTALL_PREFIX="$DEPENDENCIES"/bullet/install -DBUILD_SHARED_LIBS=1 -DINSTALL_LIBS=1 -DINSTALL_EXTRA_LIBS=1 -DCMAKE_BUILD_TYPE=Release ..
-      make -j$CORES
-      make install
       cd "$BASE"
   fi
 
@@ -713,9 +697,6 @@ if [ $REBUILD ]; then
   if [ -d "$DEPENDENCIES"/osg ]; then
     BUILD_OSG=true
   fi
-  if [ -d "$DEPENDENCIES"/bullet ]; then
-    BUILD_BULLET=true
-  fi
 
   # Switch to a specific commit
   if [ $BUILD_COMMIT ]; then
@@ -815,15 +796,6 @@ if [ $REBUILD ]; then
       -DOSGUTIL_LIBRARY="${OSG_LOCATION}"/build/lib/libosgUtil.so \
       -DOSGVIEWER_INCLUDE_DIR="${OSG_LOCATION}"/include \
       -DOSGVIEWER_LIBRARY="${OSG_LOCATION}"/build/lib/libosgViewer.so"
-  fi
-
-  if [ $BUILD_BULLET ]; then
-    CMAKE_PARAMS="$CMAKE_PARAMS \
-      -DBullet_INCLUDE_DIR="${BULLET_LOCATION}"/install/include/bullet \
-      -DBullet_BulletCollision_LIBRARY="${BULLET_LOCATION}"/install/lib/libBulletCollision.so \
-      -DBullet_LinearMath_LIBRARY="${BULLET_LOCATION}"/install/lib/libLinearMath.so"
-    export LD_LIBRARY_PATH="$LD_LIBRARY_PATH":"${BULLET_LOCATION}"/install/lib
-    export BULLET_ROOT="${BULLET_LOCATION}"/install
   fi
 
   if [ $SERVER_ONLY ]; then

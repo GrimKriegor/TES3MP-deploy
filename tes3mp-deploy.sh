@@ -268,7 +268,6 @@ EXTRA="$BASE/extra"
 
 # Dependency locations
 RAKNET_LOCATION="$DEPENDENCIES"/raknet
-OSG_LOCATION="$DEPENDENCIES"/osg
 
 # Check if this is a server only install
 if [ -f "$BASE"/.serveronly ]; then
@@ -507,11 +506,6 @@ press ENTER to continue"
   esac
   fi
 
-  # Avoid some dependencies on server only mode
-  if [ $SERVER_ONLY ]; then
-    BUILD_OSG=""
-  fi
-
   # Truncate target_commit when it points to stable
   if [ "$TARGET_COMMIT" == "stable" ]; then
     TARGET_COMMIT="$TES3MP_STABLE_VERSION"
@@ -520,7 +514,6 @@ press ENTER to continue"
   # Pull software via git
   echo -e "\n>> Downloading software"
   ! [ -e "$CODE" ] && git clone -b "${TARGET_COMMIT:-master}" https://github.com/TES3MP/TES3MP.git "$CODE"
-  if [ $BUILD_OSG ] && ! [ -e "$DEPENDENCIES"/osg ] ; then git clone -b 3.4 https://github.com/OpenMW/osg.git "$DEPENDENCIES"/osg --depth 1; fi
   ! [ -e "$DEPENDENCIES"/raknet ] && git clone https://github.com/TES3MP/CrabNet "$DEPENDENCIES"/raknet
   ! [ -e "$KEEPERS"/CoreScripts ] && git clone -b "${TARGET_COMMIT:-master}" https://github.com/TES3MP/CoreScripts.git "$KEEPERS"/CoreScripts
 
@@ -535,18 +528,6 @@ press ENTER to continue"
   # Dirty hacks
   echo -e "\n>> Applying some dirty hacks"
   sed -i "s|tes3mp.lua,chat_parser.lua|server.lua|g" "${KEEPERS}"/tes3mp-server-default.cfg #Fixes server scripts
-
-  # Build openscenegraph
-  if [ $BUILD_OSG ]; then
-      echo -e "\n>> Building OpenSceneGraph"
-      mkdir -p "$DEPENDENCIES"/osg/build
-      cd "$DEPENDENCIES"/osg/build
-      rm -f CMakeCache.txt
-      cmake ..
-      make -j$CORES
-
-      cd "$BASE"
-  fi
 
   # Build RakNet
   echo -e "\n>> Building RakNet"
@@ -677,11 +658,6 @@ fi
 # Rebuild TES3MP
 if [ $REBUILD ]; then
 
-  # Check which dependencies are present
-  if [ -d "$DEPENDENCIES"/osg ]; then
-    BUILD_OSG=true
-  fi
-
   # Switch to a specific commit
   if [ $BUILD_COMMIT ]; then
     cd "$CODE"
@@ -757,30 +733,6 @@ if [ $REBUILD ]; then
       -DRakNet_INCLUDES="${RAKNET_LOCATION}"/include \
       -DRakNet_LIBRARY_DEBUG="${RAKNET_LOCATION}"/build/lib/libRakNetLibStatic.a \
       -DRakNet_LIBRARY_RELEASE="${RAKNET_LOCATION}"/build/lib/libRakNetLibStatic.a"
-
-  if [ $BUILD_OSG ]; then
-    CMAKE_PARAMS="$CMAKE_PARAMS \
-      -DOPENTHREADS_INCLUDE_DIR="${OSG_LOCATION}"/include \
-      -DOPENTHREADS_LIBRARY="${OSG_LOCATION}"/build/lib/libOpenThreads.so \
-      -DOSG_INCLUDE_DIR="${OSG_LOCATION}"/include \
-      -DOSG_LIBRARY="${OSG_LOCATION}"/build/lib/libosg.so \
-      -DOSGANIMATION_INCLUDE_DIR="${OSG_LOCATION}"/include \
-      -DOSGANIMATION_LIBRARY="${OSG_LOCATION}"/build/lib/libosgAnimation.so \
-      -DOSGDB_INCLUDE_DIR="${OSG_LOCATION}"/include \
-      -DOSGDB_LIBRARY="${OSG_LOCATION}"/build/lib/libosgDB.so \
-      -DOSGFX_INCLUDE_DIR="${OSG_LOCATION}"/include \
-      -DOSGFX_LIBRARY="${OSG_LOCATION}"/build/lib/libosgFX.so \
-      -DOSGGA_INCLUDE_DIR="${OSG_LOCATION}"/include \
-      -DOSGGA_LIBRARY="${OSG_LOCATION}"/build/lib/libosgGA.so \
-      -DOSGPARTICLE_INCLUDE_DIR="${OSG_LOCATION}"/include \
-      -DOSGPARTICLE_LIBRARY="${OSG_LOCATION}"/build/lib/libosgParticle.so \
-      -DOSGTEXT_INCLUDE_DIR="${OSG_LOCATION}"/include \
-      -DOSGTEXT_LIBRARY="${OSG_LOCATION}"/build/lib/libosgText.so\
-      -DOSGUTIL_INCLUDE_DIR="${OSG_LOCATION}"/include \
-      -DOSGUTIL_LIBRARY="${OSG_LOCATION}"/build/lib/libosgUtil.so \
-      -DOSGVIEWER_INCLUDE_DIR="${OSG_LOCATION}"/include \
-      -DOSGVIEWER_LIBRARY="${OSG_LOCATION}"/build/lib/libosgViewer.so"
-  fi
 
   if [ $SERVER_ONLY ]; then
     CMAKE_PARAMS="$CMAKE_PARAMS \

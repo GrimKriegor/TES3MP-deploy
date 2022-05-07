@@ -4,8 +4,8 @@ set -e
 
 VERSION="2.19.0"
 
-TES3MP_STABLE_VERSION="0.8.0"
-TES3MP_STABLE_VERSION_FILE="0.47.0\n000e8724cacaf0176f6220de111ca45098807e78"
+TES3MP_STABLE_VERSION="0.8.1"
+TES3MP_STABLE_VERSION_FILE="0.47.0\n68954091c54d0596037c4fb54d2812313b7582a1"
 
 HELP_TEXT_HEADER="\
 TES3MP-deploy ($VERSION)
@@ -71,7 +71,7 @@ function run_in_container() {
       CONTAINER_DEFAULT_ARGS=$(echo $CONTAINER_DEFAULT_ARGS | sed 's/--cmake-local//')
     ;;
     * )
-      CONTAINER_IMAGE="grimkriegor/tes3mp-forge:2.3.1"
+      CONTAINER_IMAGE="grimkriegor/tes3mp-forge:2.4.0"
     ;;
   esac
 

@@ -65,13 +65,13 @@ function run_in_container() {
   # Determine Forge image
   case $CONTAINER_ARCHITECTURE in
     armhf )
-      CONTAINER_IMAGE="grimkriegor/tes3mp-forge-armhf:latest"
+      CONTAINER_IMAGE="docker.io/grimkriegor/tes3mp-forge-armhf:1.1.0"
       CONTAINER_IS_EMULATED=true
       CONTAINER_FOLDER_NAME="container-armhf"
       CONTAINER_DEFAULT_ARGS=$(echo $CONTAINER_DEFAULT_ARGS | sed 's/--cmake-local//')
     ;;
     * )
-      CONTAINER_IMAGE="grimkriegor/tes3mp-forge:2.4.0"
+      CONTAINER_IMAGE="docker.io/grimkriegor/tes3mp-forge:2.4.0"
     ;;
   esac
 

@@ -6,6 +6,7 @@ VERSION="2.20.0"
 
 TES3MP_STABLE_VERSION="0.8.1"
 TES3MP_STABLE_VERSION_FILE="0.47.0\n68954091c54d0596037c4fb54d2812313b7582a1"
+TES3MP_FORGE_VERSION="2.4.0"
 
 HELP_TEXT_HEADER="\
 TES3MP-deploy ($VERSION)
@@ -59,30 +60,28 @@ function run_in_container() {
   SCRIPT_ARGUMENTS=$(echo "$@" | sed 's/-C//;s/--container//')
 
   # Defaults
+  CONTAINER_IMAGE="docker.io/grimkriegor/tes3mp-forge:$TES3MP_FORGE_VERSION"
   CONTAINER_FOLDER_NAME="container"
   CONTAINER_DEFAULT_ARGS="--skip-pkgs --cmake-local"
 
-  # Determine Forge image
+  # Architecture specifics
   case $CONTAINER_ARCHITECTURE in
     armhf )
-      CONTAINER_IMAGE="docker.io/grimkriegor/tes3mp-forge-armhf:1.1.0"
-      CONTAINER_IS_EMULATED=true
-      CONTAINER_FOLDER_NAME="container-armhf"
-      CONTAINER_DEFAULT_ARGS=$(echo $CONTAINER_DEFAULT_ARGS | sed 's/--cmake-local//')
-    ;;
-    * )
-      CONTAINER_IMAGE="docker.io/grimkriegor/tes3mp-forge:2.4.0"
+      CONTAINER_IS_EMULATED="true"
+      CONTAINER_ARCH="arm"
+      CONTAINER_VARIANT="v7"
     ;;
   esac
 
-  # Pull or update Forge image
-  $(which docker) pull "$CONTAINER_IMAGE"
-
-  # Register qemu executables if container is emulated
+  # Emulated container specifics
   if [ $CONTAINER_IS_EMULATED ]; then
+    echo -e "\nEmulating $CONTAINER_ARCHITECTURE on $(uname -m)"
+    CONTAINER_FOLDER_NAME="$CONTAINER_FOLDER_NAME-$CONTAINER_ARCHITECTURE"
+    CONTAINER_DEFAULT_ARGS=$(echo $CONTAINER_DEFAULT_ARGS | sed 's/--cmake-local//')
     $(which docker) run --rm --privileged \
       multiarch/qemu-user-static:register --reset
-    echo -e "\nEmulating $CONTAINER_ARCHITECTURE on $(uname -m)"
+    CONTAINER_PLATFORM_CMD="--arch $CONTAINER_ARCH --variant $CONTAINER_VARIANT"
+
   fi
 
   # Run through container
@@ -91,6 +90,7 @@ function run_in_container() {
   eval $(which docker) run --rm -it \
     -v "$SCRIPT_DIR/tes3mp-deploy.sh":"/deploy/tes3mp-deploy.sh" \
     -v "$SCRIPT_DIR/$CONTAINER_FOLDER_NAME":"/build" \
+    $CONTAINER_PLATFORM_CMD \
     --entrypoint "/bin/bash" \
     "$CONTAINER_IMAGE" \
     /deploy/tes3mp-deploy.sh "$CONTAINER_DEFAULT_ARGS" "$SCRIPT_ARGUMENTS"

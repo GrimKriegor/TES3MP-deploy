@@ -63,6 +63,7 @@ function run_in_container() {
   CONTAINER_IMAGE="docker.io/grimkriegor/tes3mp-forge:$TES3MP_FORGE_VERSION"
   CONTAINER_FOLDER_NAME="container"
   CONTAINER_DEFAULT_ARGS="--skip-pkgs --cmake-local"
+  CONTAINER_PLATFORM_CMD="--arch amd64"
 
   # Architecture specifics
   case $CONTAINER_ARCHITECTURE in
@@ -80,6 +81,9 @@ function run_in_container() {
     CONTAINER_PLATFORM_CMD="--arch $CONTAINER_ARCH --variant $CONTAINER_VARIANT"
     echo -e "\nEmulating $CONTAINER_ARCHITECTURE on $(uname -m)"
   fi
+
+  # Update container image
+  eval $(which docker) pull "$CONTAINER_PLATFORM_CMD" "$CONTAINER_IMAGE"
 
   # Run through container
   echo -e "\n[!] Now running inside the TES3MP-forge container [!]\n"

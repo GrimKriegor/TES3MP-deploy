@@ -75,13 +75,10 @@ function run_in_container() {
 
   # Emulated container specifics
   if [ $CONTAINER_IS_EMULATED ]; then
-    echo -e "\nEmulating $CONTAINER_ARCHITECTURE on $(uname -m)"
     CONTAINER_FOLDER_NAME="$CONTAINER_FOLDER_NAME-$CONTAINER_ARCHITECTURE"
     CONTAINER_DEFAULT_ARGS=$(echo $CONTAINER_DEFAULT_ARGS | sed 's/--cmake-local//')
-    $(which docker) run --rm --privileged \
-      multiarch/qemu-user-static:register --reset
     CONTAINER_PLATFORM_CMD="--arch $CONTAINER_ARCH --variant $CONTAINER_VARIANT"
-
+    echo -e "\nEmulating $CONTAINER_ARCHITECTURE on $(uname -m)"
   fi
 
   # Run through container

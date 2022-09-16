@@ -805,9 +805,6 @@ if [ $MAKE_PACKAGE ]; then
    )
 
   LIBRARIES_OPENMW=( \
-    "libavcodec.so" \
-    "libavformat.so" \
-    "libavutil.so" \
     "libboost_thread.so" \
     "libboost_system.so" \
     "libboost_filesystem.so" \
@@ -817,7 +814,6 @@ if [ $MAKE_PACKAGE ]; then
     "libbz2.so" \
     "libLinearMath.so" \
     "libMyGUIEngine.so" \
-    "libopenal.so" \
     "libOpenThreads.so" \
     "libosgAnimation.so" \
     "libosgDB.so" \
@@ -831,22 +827,10 @@ if [ $MAKE_PACKAGE ]; then
     "libosgWidget.so" \
     "libosgShadow.so" \
     "libSDL2" \
-    "libswresample.so" \
-    "libswscale.so" \
     "libts.so" \
     "libtxc_dxtn.so" \
     "libunshield.so" \
     "libuuid.so" \
-    "libsndio.so" \
-    "libvpx.so" \
-    "libwebp.so" \
-    "libcrystalhd.so" \
-    "libaom.so" \
-    "libcodec2.so" \
-    "libshine.so" \
-    "libx264.so" \
-    "libx265.so" \
-    "libssh-gcrypt.so" \
     "osgPlugins" \
   )
 
@@ -858,7 +842,6 @@ if [ $MAKE_PACKAGE ]; then
 
   LIBRARIES_EXTRA=( \
     "libpng16.so" \
-    "libpng12.so" \
   )
 
   LIBRARIES_SERVER=( \

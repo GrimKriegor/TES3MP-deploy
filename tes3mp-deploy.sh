@@ -886,7 +886,7 @@ if [ $MAKE_PACKAGE ]; then
   find "$PACKAGE_TMP" -type l -exec rm -f "{}" \; || true
   rm -f "$PACKAGE_TMP"/{Make*,CMake*,*cmake}
   rm -f "$PACKAGE_TMP"/{*.bkp,*.desktop,*.xml}
-  rm -rf "$PACKAGE_TMP"/{apps,components,docs,extern,files}
+  rm -rf "$PACKAGE_TMP"/{apps,components,docs,extern,files,try-compile,_deps}
 
   # Copy useful files
   echo -e "\nCopying useful files"

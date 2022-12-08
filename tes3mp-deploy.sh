@@ -374,7 +374,7 @@ if [ $INSTALL ]; then
           openal \
           openscenegraph \
           mygui \
-          bullet \
+          bullet-dp \
           qt5-base \
           ffmpeg \
           sdl2 \

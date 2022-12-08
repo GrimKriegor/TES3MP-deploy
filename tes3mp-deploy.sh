@@ -10,7 +10,7 @@ TES3MP_FORGE_VERSION="2.4.0"
 
 HELP_TEXT_HEADER="\
 TES3MP-deploy ($VERSION)
-Grim Kriegor <grimkriegor@krutt.org>
+Grim Kriegor <grim@kriegor.net>
 Licensed under the GNU GPLv3 free license
 "
 
